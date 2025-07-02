@@ -132,6 +132,12 @@ def createNewProject():
     global filename, fileobject
 
     mainProject = Toplevel(root)
+    mainProject.transient(root)           # Attach to root
+    mainProject.grab_set()                # Make it modal (disables root interaction)
+    mainProject.lift()                    # Raise it to the top
+    mainProject.focus_force()             # Bring focus
+    mainProject.attributes("-topmost", 1) # Stay on top initially
+    mainProject.after(10, lambda: mainProject.attributes("-topmost", 0))  # Release topmost after lift
     
     varRoot1 = tk.IntVar()
     varRoot2 = tk.IntVar()
@@ -747,6 +753,14 @@ def createNewProject():
                 analysis = Toplevel(main)
                 analysis.title("Analysis - Problem Tree Analysis")
                 analysis.geometry("830x480")
+
+                # Ensure it's in front
+                analysis.transient(root)
+                analysis.grab_set()
+                analysis.lift()
+                analysis.focus_force()
+                analysis.attributes("-topmost", 1)
+                analysis.after(10, lambda: analysis.attributes("-topmost", 0))
 
                 class ShapeEditorApp:
 
@@ -3079,6 +3093,7 @@ def createNewProject():
             btnNext14.destroy() 
             addButton15.destroy()
             editButton15.destroy()
+        
 
         btnBack14 = Button(mainProject, text = "Back", width=10, command = lambda: back_14())
         btnNext14 = Button(mainProject, text = "Next", width=10, command = lambda: next_14())
@@ -3160,8 +3175,31 @@ def helpPage():
                         "Page 4: Statistical or Qualitative Analysis\n"
                         "  •  Choose a method for analysis: Linear/Multiple/Logistic Regression or Problem Tree\n"
                         "  •  If a statistical analysis method is chosen, upload a CSV file. The program will output plots and regression results based on the analysis in separate windows.\n"
-                        "  •  If Problem Tree is chosen, a window will appear \n\n"
-                        
+                        "  •  If Problem Tree is chosen, a window will appear that will let you create a problem tree.\n\n"
+                        "Page 5: Root Cause Analysis\n"
+                        "  •  Identify the root cause of the problem\n"
+                        "  •  Assess existing policies that address the root cause by listing the existing policies, their relevant provision(s), accomplishment, and assessment\n\n"
+                        "Page 6: Policy Problem and Issue Statement\n"
+                        "  •  Define the policy problem and issue statement\n\n"
+                        "Page 7: Goals and Objectives of the proposal\n"
+                        "  •  Define the goals and objectives of the proposed policy\n\n"
+                        "Page 8: Stakeholders and Actors\n"
+                        "  •  Identify stakeholders and actors involved in the policy\n\n"
+                        "Page 9: Assessment of Policy Alternatives\n"
+                        "  •  List possible policy alternatives\n"
+                        "  •  Assess each alternative based on criteria such as effectiveness, feasibility, and cost\n\n"
+                        "Page 10: Assessment of Policy Alternatives: Spillovers, Externalities, and Constraints\n"
+                        "  •  Assess spillovers, externalities, constraints, and mitigation measures of the each policy alternative\n\n"
+                        "Page 11: Best/Optimal Policy Alternative\n"
+                        "  •  Describe the best/optimal policy alternative and the reasoning behind its selection\n\n"
+                        "Page 12: Desctiption of the Best/Optimal Policy Alternative\n"
+                        "  •  Describe the best/optimal policy alternative's spillover, externalities, constraints, and mitigating measures\n\n"
+                        "Page 13: Requirements for Implementation\n"
+                        "  •  Identify what type of legislation is needed, who will implement, how much to implement, and where to source funds. \n\n"
+                        "Page 14: Policy Implementation Plan\n"
+                        "  •  Create a policy implementation plan with critical actions, responsible units, timeframes, budgets, and budget sources\n\n"
+                        "Page 15: Policy Assessment: Monitoring and Evaluation Plan\n"
+                        "  •  Create a monitoring and evaluation plan for each goal with SMART indicators, sources of data, data collection frequencies, units in charge, outputs of M&E, and M&E report users\n\n"
                         )
         
 
