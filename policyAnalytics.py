@@ -5,6 +5,7 @@ from tkinter import ttk
 from tkinter import scrolledtext 
 from tkinter import colorchooser
 from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import asksaveasfilename
 
 import textwrap
 
@@ -28,6 +29,8 @@ import sklearn as skl
 from sklearn.linear_model import LinearRegression, LogisticRegression
 
 global size, var, pageNumber
+
+save_file_path = None
 size = 10
 
 root = Tk()
@@ -2859,6 +2862,7 @@ def createNewProject():
             page_13()
         
         def next_13():
+            global pageNumber
             frame14.destroy() 
             critALabel.destroy()
             criticalAction.destroy()
@@ -3106,9 +3110,86 @@ def createNewProject():
     # json.dump(data, fileobject)
     # fileobject.close()
 
-def save():
-    global pageNumber
+def helpPage():
+    helpWindow = Toplevel(root)
+    helpWindow.title("Help")
+    helpWindow.geometry("600x300")
+
+    # Create Canvas and Scrollbar
+    canvas = tk.Canvas(helpWindow, borderwidth=0, background="#ffffff")
+    scrollbar = tk.Scrollbar(helpWindow, orient="vertical", command=canvas.yview)
+    scrollable_frame = tk.Frame(canvas, background="#ffffff")
+
+    # Configure scrolling
+    scrollable_frame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(
+            scrollregion=canvas.bbox("all")
+        )
+    )
+
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    # Pack canvas and scrollbar
+    canvas.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+
+    # Your labels go in the scrollable_frame
+    aboutLabel = Label(scrollable_frame, foreground="#76090c", background="#ffffff",
+                       font=("Franklin Gothic Heavy", 12), wraplength=500, justify="left", text="About")
     
+    descLabel = Label(scrollable_frame, foreground="#000000", background="#ffffff",
+                      font=("Franklin", 10), wraplength=500, justify="left",
+                      text="The Policy Analytics 1.0 application is a step-by-step desktop tool designed to help students, policy analysts, and public administration professionals perform comprehensive policy analysis and development. It is based on William N. Dunn’s policy paper structure, with enhancements by Dr. Ebinezer R. Florano. The application guides users through a structured process to: Define a policy problem, analyze current government efforts, perform statistical or qualitative analysis, evaluate policy alternatives, and design a policy implementation and monitoring plan. The final output is a detailed draft suited for a Policy Issue Paper.")
+
+    guideLabel = Label(scrollable_frame, foreground="#76090c", background="#ffffff",
+                       font=("Franklin Gothic Heavy", 12), wraplength=500, justify="left", text="Step-by-Step Guide")
+
+    stepsLabel = Label(scrollable_frame, foreground="#000000", background="#ffffff",
+                        font=("Franklin", 10), wraplength=500, justify="left",
+                        text=
+                        "Upon creating a new project, you will be guided through the following steps:\n\n"
+                        "Page 1: Project Setup\n"
+                        "  •  Enter project title, analyst name, font style and size, etc.\n"
+                        "  •  Choose level(s) of policy analysis (National, Local, Organizational)\n\n"
+                        "Page 2: Problematic Situation\n"
+                        "  •  Describe the problematic situation and its undesirable effects\n\n"
+                        "Page 3: Current Government Efforts\n"
+                        "  •  Describe current government efforts, accomplishments, and assessments\n\n"
+                        "Page 4: Statistical or Qualitative Analysis\n"
+                        "  •  Choose a method for analysis: Linear/Multiple/Logistic Regression or Problem Tree\n"
+                        "  •  If a statistical analysis method is chosen, upload a CSV file. The program will output plots and regression results based on the analysis in separate windows.\n"
+                        "  •  If Problem Tree is chosen, a window will appear \n\n"
+                        
+                        )
+        
+
+    # Pack labels into the scrollable frame
+    aboutLabel.pack(pady=5, padx=10, anchor="w") 
+    descLabel.pack(pady=5, padx=10, anchor="w")
+    guideLabel.pack(pady=5, padx=10, anchor="w") 
+    stepsLabel.pack(pady=5, padx=10, anchor="w")
+
+    def _on_mousewheel(event):
+        canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+    
+    canvas.bind_all("<MouseWheel>", _on_mousewheel)  # For Windows
+
+def save():
+    global pageNumber, save_file_path
+    
+    if save_file_path is None:
+        save_file_path = asksaveasfilename(
+            defaultextension=".pdf",
+            filetypes=[("PDF files", "*.pdf")],
+            initialfile=p1projecttitle + ".pdf",
+            title="Save PDF As"
+        )
+    if not save_file_path:
+        return  # User canceled save
+
+
     pdf = FPDF()   
 
     pdf.add_page()
@@ -3141,6 +3222,7 @@ def save():
     pdf.multi_cell(0, 10, txt = p6policyissue, border = 0, align = 'J', fill = FALSE)
   
     pdf.add_page()
+
     if int(pageNumber) == 5:
         pdf.multi_cell(0, 10, txt ="Regression Analysis\n", border = 0, align = 'C', fill = FALSE)
         pdf.multi_cell(0, 10, txt = p4summaryPDF, border = 0, align = 'C', fill = FALSE)
@@ -3148,7 +3230,7 @@ def save():
 
     # save the pdf with name .pdf
     
-    pdf.output(p1projecttitle+'.pdf', 'F')
+    pdf.output(save_file_path, 'F')
 
 def print_file():
 
@@ -3174,6 +3256,7 @@ file1.add_command(label ='Save', command = lambda: save())
 file1.add_command(label ='Print', command = lambda: print_file()) 
 file1.add_separator() 
 file1.add_command(label ='Exit', command = lambda: quit())
+file1.add_command(label ='Help', command = lambda: helpPage())
 
 root.config(menu=menubar)
 
