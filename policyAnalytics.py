@@ -5,6 +5,7 @@ from tkinter import ttk, messagebox # messagebox is a Hamdi addition
 from tkinter import scrolledtext 
 from tkinter import colorchooser
 from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import asksaveasfilename
 
 import textwrap
 import json
@@ -32,6 +33,8 @@ from sklearn.linear_model import LinearRegression, LogisticRegression
 import tkinter.tix as tix
 
 global size, var, pageNumber
+
+save_file_path = None
 size = 10
 
 root = Tk()
@@ -202,6 +205,12 @@ def createNewProject():
     global filename, fileobject
 
     mainProject = Toplevel(root)
+    mainProject.transient(root)           # Attach to root
+    mainProject.grab_set()                # Make it modal (disables root interaction)
+    mainProject.lift()                    # Raise it to the top
+    mainProject.focus_force()             # Bring focus
+    mainProject.attributes("-topmost", 1) # Stay on top initially
+    mainProject.after(10, lambda: mainProject.attributes("-topmost", 0))  # Release topmost after lift
     
     varRoot1 = tk.IntVar()
     varRoot2 = tk.IntVar()
@@ -973,6 +982,16 @@ def createNewProject():
                 plt.show()
             elif var.get() == 4:
                 analysis.title("Analysis - Problem Tree Analysis")
+                analysis.geometry("830x480")
+
+                # Ensure it's in front
+                analysis.transient(root)
+                analysis.grab_set()
+                analysis.lift()
+                analysis.focus_force()
+                analysis.attributes("-topmost", 1)
+                analysis.after(10, lambda: analysis.attributes("-topmost", 0))
+
                 class ShapeEditorApp:
                     def __init__(self, root):
                         global textValue
@@ -3176,8 +3195,27 @@ def createNewProject():
 
         def next_13():
             global pageNumber
-            with open("page14_data.json", "w") as f:
-                json.dump({"plan": [implementationPlanTable.item(i)['values'] for i in implementationPlanTable.get_children()]}, f)
+            frame14.destroy() 
+            critALabel.destroy()
+            criticalAction.destroy()
+            criticalAction.place_forget()
+            raUnitLabel.destroy()
+            respaccoUnit.destroy()
+            respaccoUnit.place_forget()
+            timeframeLabel.destroy()
+            timeframe.destroy()
+            timeframe.place_forget()
+            budgetLabel.destroy()
+            budget.destroy()
+            budget.place_forget()
+            budgSoLabel.destroy()
+            budgetSource.destroy()
+            budgetSource.place_forget()
+            btnBack13.destroy()
+            btnNext13.destroy() 
+            addButton14.destroy()
+            editButton14.destroy()
+
             pageNumber += 1
             for widget in mainProject.winfo_children():
                 widget.destroy()
@@ -3382,25 +3420,42 @@ def createNewProject():
             page_14()
 
         def next_14():
-            global pageNumber
-            with open("page15_data.json", "w") as f:
-                json.dump({"assessment": [policyAssessmentTable.item(i)['values'] for i in policyAssessmentTable.get_children()]}, f)
-            save()
-            pageNumber += 1
-            for widget in mainProject.winfo_children():
-                widget.destroy()
-            messagebox.showinfo("Completion", "Policy analysis completed! You can start a new project or open an existing one from the File menu.")
-            new_project()  # Reset to page_1 or home page
+            # global pageNumber
+            # pageNumber += 1
+            # print(pageNumber)
+            mainProject.state("normal")
+            frame15.destroy() 
+            goalAndObjectiveLabel.destroy()
+            goalAndObjective.destroy()
+            goalAndObjective.place_forget()
+            smartIndicatorLabel.destroy()
+            smartIndicator.destroy()
+            smartIndicator.place_forget()
+            sourceofDataLabel.destroy()
+            sourceofData.destroy()
+            sourceofData.place_forget()
+            dcfLabel.destroy()
+            dcf.destroy()
+            dcf.place_forget()
+            uicLabel.destroy()
+            uic.destroy()
+            uic.place_forget()
+            MEoutputLabel.destroy()
+            MEoutput.destroy()
+            MEoutput.place_forget()
+            MEuserLabel.destroy()
+            MEuser.destroy()
+            MEuser.place_forget()
+            btnBack14.destroy()
+            btnNext14.destroy() 
+            addButton15.destroy()
+            editButton15.destroy()
+        
 
-        setup_page_common(15, "Monitoring and Evaluation Plan", frame15, widgets_to_destroy, back_14, next_14)
-        try:
-            with open("page15_data.json", "r") as f:
-                data = json.load(f)
-                for item in data.get("assessment", []):
-                    policyAssessmentTable.insert("", "end", values=item)
-        except FileNotFoundError:
-            for i, (goal, indicator) in enumerate(zip(p7policyGoalsandObjectives, p7indicators)):
-                policyAssessmentTable.insert("", 'end', values=(goal, indicator, "", "", "", "", ""))
+        btnBack14 = Button(mainProject, text = "Back", width=10, command = lambda: back_14())
+        btnNext14 = Button(mainProject, text = "Next", width=10, command = lambda: next_14())
+        btnBack14.place(x=590, y=640)
+        btnNext14.place(x=840, y=640)
 
     # projectTitle.config(bg="white")
     # fontSize.config(bg="white")
@@ -3427,9 +3482,109 @@ def createNewProject():
     # json.dump(data, fileobject)
     # fileobject.close()
 
-def save():
-    global pageNumber
+def helpPage():
+    helpWindow = Toplevel(root)
+    helpWindow.title("Help")
+    helpWindow.geometry("600x300")
+
+    # Create Canvas and Scrollbar
+    canvas = tk.Canvas(helpWindow, borderwidth=0, background="#ffffff")
+    scrollbar = tk.Scrollbar(helpWindow, orient="vertical", command=canvas.yview)
+    scrollable_frame = tk.Frame(canvas, background="#ffffff")
+
+    # Configure scrolling
+    scrollable_frame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(
+            scrollregion=canvas.bbox("all")
+        )
+    )
+
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    # Pack canvas and scrollbar
+    canvas.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+
+    # Your labels go in the scrollable_frame
+    aboutLabel = Label(scrollable_frame, foreground="#76090c", background="#ffffff",
+                       font=("Franklin Gothic Heavy", 12), wraplength=500, justify="left", text="About")
     
+    descLabel = Label(scrollable_frame, foreground="#000000", background="#ffffff",
+                      font=("Franklin", 10), wraplength=500, justify="left",
+                      text="The Policy Analytics 1.0 application is a step-by-step desktop tool designed to help students, policy analysts, and public administration professionals perform comprehensive policy analysis and development. It is based on William N. Dunn’s policy paper structure, with enhancements by Dr. Ebinezer R. Florano. The application guides users through a structured process to: Define a policy problem, analyze current government efforts, perform statistical or qualitative analysis, evaluate policy alternatives, and design a policy implementation and monitoring plan. The final output is a detailed draft suited for a Policy Issue Paper.")
+
+    guideLabel = Label(scrollable_frame, foreground="#76090c", background="#ffffff",
+                       font=("Franklin Gothic Heavy", 12), wraplength=500, justify="left", text="Step-by-Step Guide")
+
+    stepsLabel = Label(scrollable_frame, foreground="#000000", background="#ffffff",
+                        font=("Franklin", 10), wraplength=500, justify="left",
+                        text=
+                        "Upon creating a new project, you will be guided through the following steps:\n\n"
+                        "Page 1: Project Setup\n"
+                        "  •  Enter project title, analyst name, font style and size, etc.\n"
+                        "  •  Choose level(s) of policy analysis (National, Local, Organizational)\n\n"
+                        "Page 2: Problematic Situation\n"
+                        "  •  Describe the problematic situation and its undesirable effects\n\n"
+                        "Page 3: Current Government Efforts\n"
+                        "  •  Describe current government efforts, accomplishments, and assessments\n\n"
+                        "Page 4: Statistical or Qualitative Analysis\n"
+                        "  •  Choose a method for analysis: Linear/Multiple/Logistic Regression or Problem Tree\n"
+                        "  •  If a statistical analysis method is chosen, upload a CSV file. The program will output plots and regression results based on the analysis in separate windows.\n"
+                        "  •  If Problem Tree is chosen, a window will appear that will let you create a problem tree.\n\n"
+                        "Page 5: Root Cause Analysis\n"
+                        "  •  Identify the root cause of the problem\n"
+                        "  •  Assess existing policies that address the root cause by listing the existing policies, their relevant provision(s), accomplishment, and assessment\n\n"
+                        "Page 6: Policy Problem and Issue Statement\n"
+                        "  •  Define the policy problem and issue statement\n\n"
+                        "Page 7: Goals and Objectives of the proposal\n"
+                        "  •  Define the goals and objectives of the proposed policy\n\n"
+                        "Page 8: Stakeholders and Actors\n"
+                        "  •  Identify stakeholders and actors involved in the policy\n\n"
+                        "Page 9: Assessment of Policy Alternatives\n"
+                        "  •  List possible policy alternatives\n"
+                        "  •  Assess each alternative based on criteria such as effectiveness, feasibility, and cost\n\n"
+                        "Page 10: Assessment of Policy Alternatives: Spillovers, Externalities, and Constraints\n"
+                        "  •  Assess spillovers, externalities, constraints, and mitigation measures of the each policy alternative\n\n"
+                        "Page 11: Best/Optimal Policy Alternative\n"
+                        "  •  Describe the best/optimal policy alternative and the reasoning behind its selection\n\n"
+                        "Page 12: Desctiption of the Best/Optimal Policy Alternative\n"
+                        "  •  Describe the best/optimal policy alternative's spillover, externalities, constraints, and mitigating measures\n\n"
+                        "Page 13: Requirements for Implementation\n"
+                        "  •  Identify what type of legislation is needed, who will implement, how much to implement, and where to source funds. \n\n"
+                        "Page 14: Policy Implementation Plan\n"
+                        "  •  Create a policy implementation plan with critical actions, responsible units, timeframes, budgets, and budget sources\n\n"
+                        "Page 15: Policy Assessment: Monitoring and Evaluation Plan\n"
+                        "  •  Create a monitoring and evaluation plan for each goal with SMART indicators, sources of data, data collection frequencies, units in charge, outputs of M&E, and M&E report users\n\n"
+                        )
+        
+
+    # Pack labels into the scrollable frame
+    aboutLabel.pack(pady=5, padx=10, anchor="w") 
+    descLabel.pack(pady=5, padx=10, anchor="w")
+    guideLabel.pack(pady=5, padx=10, anchor="w") 
+    stepsLabel.pack(pady=5, padx=10, anchor="w")
+
+    def _on_mousewheel(event):
+        canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+    
+    canvas.bind_all("<MouseWheel>", _on_mousewheel)  # For Windows
+
+def save():
+    global pageNumber, save_file_path
+    
+    if save_file_path is None:
+        save_file_path = asksaveasfilename(
+            defaultextension=".pdf",
+            filetypes=[("PDF files", "*.pdf")],
+            initialfile=p1projecttitle + ".pdf",
+            title="Save PDF As"
+        )
+    if not save_file_path:
+        return  # User canceled save
+
+
     pdf = FPDF()   
 
     pdf.add_page()
@@ -3462,6 +3617,7 @@ def save():
     pdf.multi_cell(0, 10, txt = p6policyissue, border = 0, align = 'J', fill = FALSE)
   
     pdf.add_page()
+
     if int(pageNumber) == 5:
         pdf.multi_cell(0, 10, txt ="Regression Analysis\n", border = 0, align = 'C', fill = FALSE)
         pdf.multi_cell(0, 10, txt = p4summaryPDF, border = 0, align = 'C', fill = FALSE)
@@ -3469,7 +3625,7 @@ def save():
 
     # save the pdf with name .pdf
     
-    pdf.output(p1projecttitle+'.pdf', 'F')
+    pdf.output(save_file_path, 'F')
 
 def print_file():
 
@@ -3495,6 +3651,7 @@ file1.add_command(label ='Save', command = lambda: save())
 file1.add_command(label ='Print', command = lambda: print_file()) 
 file1.add_separator() 
 file1.add_command(label ='Exit', command = lambda: quit())
+file1.add_command(label ='Help', command = lambda: helpPage())
 
 root.config(menu=menubar)
 
