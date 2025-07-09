@@ -1,1 +1,1 @@
-back_2
+global size, var, pageNumber
