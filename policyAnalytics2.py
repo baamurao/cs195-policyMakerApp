@@ -33,7 +33,8 @@ from sklearn.linear_model import LinearRegression, LogisticRegression
 
 global size, var, pageNumber
 size = 10
-save_file_path = None
+save_pdf_file_path = None
+save_json_file_path = None
 
 root = Tk()
 root.title("Policy Analytics 1.0")
@@ -131,6 +132,64 @@ style = ttk.Style()
 
 # Nasa baba yung menu set-up - Bmae
 
+###Bmae addition: for saving and opening projects
+global p1projecttitle, p1analysts, p1fontstyle, p1policyanalysis, p1fontsize
+
+p1projecttitle = " "
+p1analysts = " "
+p1fontstyle = " "
+p1policyanalysis = " "
+p1fontstyle = " "
+p1fontsize = 12
+
+global p2problematicsituation, p2undesirableeffects
+
+p2problematicsituation = ""
+p2undesirableeffects = ""
+
+global p3efforts, p3accomplishments, p3assessments
+p3efforts = []
+p3accomplishments = []
+p3assessments = []
+
+global p5rootcause, p5assessments
+p5rootcause = " "
+p5assessments = []
+
+global p6policyproblem, p6policyissue
+p6policyproblem = " "
+p6policyissue = ""
+
+global p7policyGoalsandObjectives, p7indicators
+p7policyGoalsandObjectives = []
+p7indicators = []
+
+global p8stakeholders, p8actors
+p8stakeholders = []
+p8actors = []
+
+global p9altnum, p9alternatives
+p9altnum = []
+p9alternatives = []
+
+global p10spillovers, p10externalities, p10constraints, p10mitimeasures
+p10spillovers = ""
+p10externalities = ""
+p10constraints =""
+p10mitimeasures = ""
+
+global p11BPAdescription, p11BPAreasonSelect
+p11BPAdescription = ""
+p11BPAreasonSelect = ""
+
+global p12BPAspillover, p12BPAexternality, p12BPAconstraint, p12BPAmitigatingmeasure
+p12BPAspillover = ""
+p12BPAexternality = ""
+p12BPAconstraint = ""
+p12BPAmitigatingmeasure = ""
+
+
+
 def new_project():
     global pageNumber
     pageNumber = 1
@@ -139,10 +198,57 @@ def new_project():
     page_1()  # Assumed defined elsewhere
 
 def open_project():
+
+    global p1projecttitle, p1analysts, p1fontstyle, p1policyanalysis, p1fontsize
+    global p2problematicsituation, p2undesirableeffects
+    global p3efforts, p3accomplishments, p3assessments
+    global p5rootcause, p5assessments
+    global p6policyproblem, p6policyissue
+    global p7policyGoalsandObjectives, p7indicators
+    global p8stakeholders, p8actors
+    global p9altnum, p9alternatives
+    global p10spillovers, p10externalities, p10constraints, p10mitimeasures
+    global p11BPAdescription, p11BPAreasonSelect
+    global p12BPAspillover, p12BPAexternality, p12BPAconstraint, p12BPAmitigatingmeasure
+
+    
     filename = tk.filedialog.askopenfilename(filetypes=[("JSON Files", "*.json")])
     if filename:
-        # Logic to load project data (implement based on save format)
-        messagebox.showinfo("Open", "Project loading not fully implemented.")
+        with open(filename, "r") as f:
+            data = json.load(f)
+
+        p1projecttitle = data.get("p1projecttitle", "")
+        p1analysts = data.get("p1analysts", "")
+        p1fontstyle = data.get("p1fontstyle", "")
+        p1fontsize = data.get("p1fontsize", 12)
+        p1policyanalysis = data.get("p1policyanalysis", "")
+        p2problematicsituation = data.get("p2problematicsituation", "")
+        p2undesirableeffects = data.get("p2undesirableeffects", "")
+        p3efforts = data.get("p3efforts", [])
+        p3accomplishments = data.get("p3accomplishments", [])
+        p3assessments = data.get("p3assessments", [])
+        p5rootcause = data.get("p5rootcause", "")
+        p5assessments = data.get("p5assessments", ["", "", "", ""])
+        p6policyproblem = data.get("p6policyproblem", "")
+        p6policyissue = data.get("p6policyissue", "")
+        p7policyGoalsandObjectives = data.get("p7policyGoalsandObjectives", [])
+        p7indicators = data.get("p7indicators", [])
+        p8stakeholders = data.get("p8stakeholders", [])
+        p8actors = data.get("p8actors", [])
+        p9altnum = data.get("p9altnum", [])
+        p9alternatives = data.get("p9alternatives", [])
+        p10spillovers = data.get("p10spillovers", "")
+        p10externalities = data.get("p10externalities", "")
+        p10constraints = data.get("p10constraints", "")
+        p10mitimeasures = data.get("p10mitimeasures", "")
+        p11BPAdescription = data.get("p11BPAdescription", "")
+        p11BPAreasonSelect = data.get("p11BPAreasonSelect", "")
+        p12BPAspillover = data.get("p12BPAspillover", "")
+        p12BPAexternality = data.get("p12BPAexternality", "")
+        p12BPAconstraint = data.get("p12BPAconstraint", "")
+        p12BPAmitigatingmeasure = data.get("p12BPAmitigatingmeasure", "")
+
+        createNewProject()
 
 def help_page():
     help_window = tk.Toplevel(main)
@@ -197,11 +303,6 @@ def createNewProject():
     global pageNumber
     pageNumber = 0
 
-    global p3efforts, p3accomplishments, p3assessments
-    p3efforts = []
-    p3accomplishments = []
-    p3assessments = []
-
     global filename, fileobject
 
     mainProject = Toplevel(root)
@@ -224,15 +325,14 @@ def createNewProject():
 
     status = ttk.Label(mainProject, text="")
     
-    global p1projecttitle, p1analysts, p1fontstyle, p1policyanalysis, p1fontstyle, p1fontsize
-    p1projecttitle = " "
-    p1analysts = " "
-    p1fontstyle = " "
-    p1policyanalysis = " "
-    p1fontstyle = " "
-    p1fontsize = 12
+    ##global p1projecttitle, p1analysts, p1fontstyle, p1policyanalysis, p1fontstyle, p1fontsize
+    ##p1projecttitle = " "
+    ##p1analysts = " "
+    ##p1fontstyle = " "
+    ##p1policyanalysis = " "
+    ##p1fontstyle = " "
+    ##p1fontsize = 12
 
-    assessmentTuple = []
     color = ("", "#000000")  # Default color for ShapeEditorApp
     interceptLR, coefficientLR = 0, 0
     interceptMR1, coefficientMR1 = 0, 0
@@ -454,7 +554,13 @@ def createNewProject():
         national.grid(row=6, column=2, sticky = W, padx=56)
         local.grid(row=7, column=2, sticky = W, padx=56)
         organizational.grid(row=8, column=2, sticky = W, padx=56)
-    
+
+        projectTitle.insert(0, p1projecttitle)
+        analystName.insert(0, p1analysts)
+        polAnaTitle.insert(0, p1policyanalysis)
+        fontsList.set(p1fontstyle)
+        fontSize.insert(0, str(p1fontsize))
+
         def clear_page_1():
             projectTitle.config(bg="white")
             fontSize.config(bg="white")
@@ -529,11 +635,11 @@ def createNewProject():
 
     page_1()
 
-    global p2problematicsituation, p2undesirableeffects
-    p2problematicsituation = "problematic situation"
-    p2undesirableeffects = "undesirable effects"
-
     def page_2():                                                               # write problematic situation and undesirable effects
+
+        status = Label(mainProject, text="")
+        status.place(x=10, y=170)
+
         mainProject.geometry("660x210")
         frame2 = tk.LabelFrame(mainProject)
 
@@ -550,6 +656,9 @@ def createNewProject():
         probSit.grid(row=2, column=0, sticky = W, padx=7)
         undeEffLabel.grid(row=1, column=1, sticky = W, padx=7)
         undeEff.grid(row=2, column=1, sticky = W, padx=7)
+
+        probSit.insert("1.0", p2problematicsituation)
+        undeEff.insert("1.0", p2undesirableeffects)
         
         def back_1():
             global pageNumber
@@ -691,6 +800,10 @@ def createNewProject():
         btnBack2.place(x=490, y=650)
         btnNext2.place(x=680, y=650)
 
+        if not effortsTable.get_children():
+            for e, a, s in zip(p3efforts, p3accomplishments, p3assessments):
+                effortsTable.insert("", "end", values=(wrap(e), wrap(a), wrap(s)))
+
         # Event handlers
         def show_data(a):
             effort.delete("1.0", tk.END)
@@ -790,18 +903,6 @@ def createNewProject():
         accomplishment.bind("<Tab>", lambda event: assessment.focus_set())
         assessment.bind("<Tab>", lambda event: addButton.focus_set())
 
-        # Load saved data (if any)
-        try:
-            with open("page3_data.json", "r") as f:
-                data = json.load(f)
-                for e, a, s in zip(data["efforts"], data["accomplishments"], data["assessments"]):
-                    effortsTable.insert("", "end", values=(wrap(e), wrap(a), wrap(s)))
-                    p3efforts.append(e)
-                    p3accomplishments.append(a)
-                    p3assessments.append(s)
-        except FileNotFoundError:
-            pass
-
         def back_2():
             global pageNumber
             pageNumber -= 1
@@ -811,19 +912,16 @@ def createNewProject():
 
         def next_2():
             global pageNumber
-            with open("page3_data.json", "w") as f:
-                json.dump({
-                    "efforts": p3efforts,
-                    "accomplishments": p3accomplishments,
-                    "assessments": p3assessments
-                }, f)
             pageNumber += 1
             for widget in mainProject.winfo_children():
                 widget.destroy()
             page_4()
 
     def page_4():
+        mainProject.geometry("660x210")
+
         global var
+
         var = tk.IntVar()
         mainProject.state('zoomed')
         style.configure("TButton", foreground="black", font=("Arial", 10))
@@ -1104,7 +1202,7 @@ def createNewProject():
     p5rootcause = " "
     
     def page_5():
-        global p5rootcause, assessmentTuple
+        global p5rootcause, p5assessments
         frame5 = tk.LabelFrame(mainProject)
         widgets_to_destroy = [frame5]
         undo_stack = []
@@ -1190,8 +1288,8 @@ def createNewProject():
                 return
             item_id = assessment_table.insert("", 'end', values=texts)
             undo_stack.append(("add", item_id))
-            global assessmentTuple
-            assessmentTuple = texts
+            global p5assessments
+            p5assessments.append(texts)
             existing_policy.delete("1.0", tk.END)
             relevant_provision.delete("1.0", tk.END)
             accomplishment2.delete("1.0", tk.END)
@@ -1212,8 +1310,8 @@ def createNewProject():
             old_values = assessment_table.item(selected_item)['values']
             undo_stack.append(("edit", selected_item, old_values))
             assessment_table.item(selected_item, values=texts)
-            global assessmentTuple
-            assessmentTuple = texts
+            global p5assessments
+            p5assessments = texts
 
         def delete_data2():
             selected_item = assessment_table.selection()
@@ -1266,23 +1364,23 @@ def createNewProject():
                 status.config(text="Enter root cause", foreground="red")
                 status.place(relx=0.01, rely=0.9)
                 return
-            with open("page5_data.json", "w") as f:
-                json.dump({"root_cause": p5rootcause, "assessments": [assessment_table.item(i)['values'] for i in assessment_table.get_children()]}, f)
+            #with open("page5_data.json", "w") as f:
+            #    json.dump({"root_cause": p5rootcause, "assessments": [assessment_table.item(i)['values'] for i in assessment_table.get_children()]}, f)
             pageNumber += 1
             for widget in mainProject.winfo_children():
                 widget.destroy()
             page_6()
 
         setup_page_common(5, "Root Cause and Policy Assessment", frame5, widgets_to_destroy, back_4, next_4)
-        try:
-            with open("page5_data.json", "r") as f:
-                data = json.load(f)
-                p5rootcause = data.get("root_cause", "")
-                root_cause.insert(0, p5rootcause)
-                for item in data.get("assessments", []):
-                    assessment_table.insert("", "end", values=item)
-        except FileNotFoundError:
-            pass
+        ##try:
+        ##    with open("page5_data.json", "r") as f:
+        ##        data = json.load(f)
+        ##        p5rootcause = data.get("root_cause", "")
+        ##        root_cause.insert(0, p5rootcause)
+        ##        for item in data.get("assessments", []):
+        ##            assessment_table.insert("", "end", values=item)
+        ##except FileNotFoundError:
+        ##    pass
 
     global p6policyproblem, p6policyissue
     p6policyproblem = " "
@@ -1321,24 +1419,21 @@ def createNewProject():
             if not p6policyissue:
                 status.config(text="Enter policy issue statement", foreground="red")
                 return
-            with open("page6_data.json", "w") as f:
-                json.dump({"policy_problem": p6policyproblem, "policy_issue": p6policyissue}, f)
+            #with open("page6_data.json", "w") as f:
+            #    json.dump({"policy_problem": p6policyproblem, "policy_issue": p6policyissue}, f)
             pageNumber += 1
             for widget in mainProject.winfo_children():
                 widget.destroy()
             page_7()
 
         setup_page_common(6, "Policy Problem and Issue", frame6, widgets_to_destroy, back_5, next_5)
-        try:
-            with open("page6_data.json", "r") as f:
-                data = json.load(f)
-                policy_prob.insert("1.0", data.get("policy_problem", ""))
-                policy_iss.insert("1.0", data.get("policy_issue", ""))
-        except FileNotFoundError:
-            pass
-
-    p7policyGoalsandObjectives = []
-    p7indicators = []
+        ##try:
+        ##    with open("page6_data.json", "r") as f:
+        ##        data = json.load(f)
+        ##        policy_prob.insert("1.0", data.get("policy_problem", ""))
+        ##        policy_iss.insert("1.0", data.get("policy_issue", ""))
+        ##except FileNotFoundError:
+        ##    pass
 
     def page_7():
         global p7policyGoalsandObjectives, p7indicators
@@ -1475,26 +1570,23 @@ def createNewProject():
 
         def next_6():
             global pageNumber
-            with open("page7_data.json", "w") as f:
-                json.dump({"goals": p7policyGoalsandObjectives, "indicators": p7indicators}, f)
-            pageNumber += 1
+            ##with open("page7_data.json", "w") as f:
+            ##    json.dump({"goals": p7policyGoalsandObjectives, "indicators": p7indicators}, f)
+            ##pageNumber += 1
             for widget in mainProject.winfo_children():
                 widget.destroy()
             page_8()
 
         setup_page_common(7, "Goals and Objectives", frame7, widgets_to_destroy, back_6, next_6)
-        try:
-            with open("page7_data.json", "r") as f:
-                data = json.load(f)
-                for g, i in zip(data.get("goals", []), data.get("indicators", [])):
-                    goals_and_obj_table.insert("", "end", values=(g, i))
-                    p7policyGoalsandObjectives.append(g)
-                    p7indicators.append(i)
-        except FileNotFoundError:
-            pass
-
-    p8stakeholders = []
-    p8actors = []
+        ##try:
+        ##    with open("page7_data.json", "r") as f:
+        ##        data = json.load(f)
+        ##        for g, i in zip(data.get("goals", []), data.get("indicators", [])):
+        ##            goals_and_obj_table.insert("", "end", values=(g, i))
+        ##            p7policyGoalsandObjectives.append(g)
+        ##            p7indicators.append(i)
+        ##except FileNotFoundError:
+        ##    pass
 
     def page_8():
         global p8stakeholders, p8actors
@@ -1631,23 +1723,23 @@ def createNewProject():
 
         def next_7():
             global pageNumber
-            with open("page8_data.json", "w") as f:
-                json.dump({"stakeholders": p8stakeholders, "actors": p8actors}, f)
-            pageNumber += 1
+            ##with open("page8_data.json", "w") as f:
+            ##    json.dump({"stakeholders": p8stakeholders, "actors": p8actors}, f)
+            ##pageNumber += 1
             for widget in mainProject.winfo_children():
                 widget.destroy()
             page_9()
 
         setup_page_common(8, "Stakeholders and Actors", frame8, widgets_to_destroy, back_7, next_7)
-        try:
-            with open("page8_data.json", "r") as f:
-                data = json.load(f)
-                for s, a in zip(data.get("stakeholders", []), data.get("actors", [])):
-                    sta_and_act_table.insert("", "end", values=(s, a))
-                    p8stakeholders.append(s)
-                    p8actors.append(a)
-        except FileNotFoundError:
-            pass
+        ##try:
+        ##    with open("page8_data.json", "r") as f:
+        ##        data = json.load(f)
+        ##        for s, a in zip(data.get("stakeholders", []), data.get("actors", [])):
+        ##            sta_and_act_table.insert("", "end", values=(s, a))
+        ##            p8stakeholders.append(s)
+        ##            p8actors.append(a)
+        ##except FileNotFoundError:
+        ##    pass
 
     global p9alternatives
     p9alternatives = []
@@ -2632,8 +2724,8 @@ def createNewProject():
                         motivationText = motivation.get()                   # read motivation textbox        
                         sourceText = source.get()                           # read source textbox   
 
-                        global assessmentTuple
-                        assessmentTuple = [player_stakeactorText, positionText, motivationText, sourceText]
+                        global p5assessments
+                        p5assessments = [player_stakeactorText, positionText, motivationText, sourceText]
 
                         # effortList.append(efforttuple)
 
@@ -2838,21 +2930,21 @@ def createNewProject():
 
         def next_9():
             global pageNumber
-            with open("page10_data.json", "w") as f:
-                json.dump({"assessments": [assessPATable.item(i)['values'] for i in assessPATable.get_children()]}, f)
+            ##with open("page10_data.json", "w") as f:
+            ##    json.dump({"assessments": [assessPATable.item(i)['values'] for i in assessPATable.get_children()]}, f)
             pageNumber += 1
             for widget in mainProject.winfo_children():
                 widget.destroy()
             page_11()
 
         setup_page_common(10, "Assessments of Policy Alternatives", frame10, widgets_to_destroy, back_9, next_9)
-        try:
-            with open("page10_data.json", "r") as f:
-                data = json.load(f)
-                for item in data.get("assessments", []):
-                    assessPATable.insert("", "end", values=item)
-        except FileNotFoundError:
-            pass
+        ##try:
+        ##    with open("page10_data.json", "r") as f:
+        ##        data = json.load(f)
+        ##        for item in data.get("assessments", []):
+        ##            assessPATable.insert("", "end", values=item)
+        ##except FileNotFoundError:
+        ##    pass
 
     p11BPAdescription = " "
     p11BPAreasonSelect = " "
@@ -2892,8 +2984,8 @@ def createNewProject():
             if not p11BPAreasonSelect:
                 status.config(text="Enter reason for selection", foreground="red")
                 return
-            with open("page11_data.json", "w") as f:
-                json.dump({"description": p11BPAdescription, "reason": p11BPAreasonSelect}, f)
+            ##with open("page11_data.json", "w") as f:
+            ##    json.dump({"description": p11BPAdescription, "reason": p11BPAreasonSelect}, f)
             save()
             pageNumber += 1
             for widget in mainProject.winfo_children():
@@ -2901,13 +2993,13 @@ def createNewProject():
             page_12()
 
         setup_page_common(11, "Best Policy Alternative Description", frame11, widgets_to_destroy, back_10, next_10)
-        try:
-            with open("page11_data.json", "r") as f:
-                data = json.load(f)
-                descr.insert("1.0", data.get("description", ""))
-                reaSel.insert("1.0", data.get("reason", ""))
-        except FileNotFoundError:
-            pass
+        ##try:
+        ##    with open("page11_data.json", "r") as f:
+        ##        data = json.load(f)
+        ##        descr.insert("1.0", data.get("description", ""))
+        ##        reaSel.insert("1.0", data.get("reason", ""))
+        ##except FileNotFoundError:
+        ##    pass
 
     p12BPAspillover = " "
     p12BPAexternality = " "
@@ -2965,13 +3057,13 @@ def createNewProject():
             if not p12BPAmitigatingmeasure:
                 status.config(text="Enter mitigating measure", foreground="red")
                 return
-            with open("page12_data.json", "w") as f:
-                json.dump({
-                    "spillover": p12BPAspillover,
-                    "externality": p12BPAexternality,
-                    "constraint": p12BPAconstraint,
-                    "mitigating_measure": p12BPAmitigatingmeasure
-                }, f)
+            ##with open("page12_data.json", "w") as f:
+            ##    json.dump({
+            ##        "spillover": p12BPAspillover,
+            ##        "externality": p12BPAexternality,
+            ##        "constraint": p12BPAconstraint,
+            ##        "mitigating_measure": p12BPAmitigatingmeasure
+            ##    }, f)
             save()
             pageNumber += 1
             for widget in mainProject.winfo_children():
@@ -2979,15 +3071,15 @@ def createNewProject():
             page_13()
 
         setup_page_common(12, "Best Policy Alternative Details", frame12, widgets_to_destroy, back_11, next_11)
-        try:
-            with open("page12_data.json", "r") as f:
-                data = json.load(f)
-                spillover.insert("1.0", data.get("spillover", ""))
-                externality.insert("1.0", data.get("externality", ""))
-                constraint.insert("1.0", data.get("constraint", ""))
-                mitiMeasure.insert("1.0", data.get("mitigating_measure", ""))
-        except FileNotFoundError:
-            pass
+        ##try:
+        ##    with open("page12_data.json", "r") as f:
+        ##        data = json.load(f)
+        ##        spillover.insert("1.0", data.get("spillover", ""))
+        ##        externality.insert("1.0", data.get("externality", ""))
+        ##        constraint.insert("1.0", data.get("constraint", ""))
+        ##        mitiMeasure.insert("1.0", data.get("mitigating_measure", ""))
+        ##except FileNotFoundError:
+        ##    pass
 
     p13BPAwhat = " "
     p13BPAwho = " "
@@ -3036,12 +3128,12 @@ def createNewProject():
             if not p13BPAhow:
                 status.config(text="Enter how much to implement", foreground="red")
                 return
-            with open("page13_data.json", "w") as f:
-                json.dump({
-                    "legislation": p13BPAwhat,
-                    "implementers": p13BPAwho,
-                    "funding": p13BPAhow
-                }, f)
+            ##with open("page13_data.json", "w") as f:
+            ##    json.dump({
+            ##        "legislation": p13BPAwhat,
+            ##        "implementers": p13BPAwho,
+            ##        "funding": p13BPAhow
+            ##    }, f)
             save()
             pageNumber += 1
             for widget in mainProject.winfo_children():
@@ -3049,14 +3141,14 @@ def createNewProject():
             page_14()
 
         setup_page_common(13, "Implementation Requirements", frame13, widgets_to_destroy, back_12, next_12)
-        try:
-            with open("page13_data.json", "r") as f:
-                data = json.load(f)
-                p13what.insert("1.0", data.get("legislation", ""))
-                p13who.insert("1.0", data.get("implementers", ""))
-                p13how.insert("1.0", data.get("funding", ""))
-        except FileNotFoundError:
-            pass
+        ##try:
+        ##    with open("page13_data.json", "r") as f:
+        ##        data = json.load(f)
+        ##        p13what.insert("1.0", data.get("legislation", ""))
+        ##        p13who.insert("1.0", data.get("implementers", ""))
+        ##        p13how.insert("1.0", data.get("funding", ""))
+        ##except FileNotFoundError:
+        ##    pass
 
     def page_14():
         frame14 = tk.LabelFrame(mainProject)
@@ -3220,21 +3312,21 @@ def createNewProject():
 
         def next_13():
             global pageNumber
-            with open("page14_data.json", "w") as f:
-                json.dump({"plan": [implementationPlanTable.item(i)['values'] for i in implementationPlanTable.get_children()]}, f)
+            ##with open("page14_data.json", "w") as f:
+            ##    json.dump({"plan": [implementationPlanTable.item(i)['values'] for i in implementationPlanTable.get_children()]}, f)
             pageNumber += 1
             for widget in mainProject.winfo_children():
                 widget.destroy()
             page_15()
 
         setup_page_common(14, "Policy Implementation Plan", frame14, widgets_to_destroy, back_13, next_13)
-        try:
-            with open("page14_data.json", "r") as f:
-                data = json.load(f)
-                for item in data.get("plan", []):
-                    implementationPlanTable.insert("", "end", values=item)
-        except FileNotFoundError:
-            pass
+        ##try:
+        ##    with open("page14_data.json", "r") as f:
+        ##        data = json.load(f)
+        ##        for item in data.get("plan", []):
+        ##            implementationPlanTable.insert("", "end", values=item)
+        ##except FileNotFoundError:
+        ##    pass
 
     def page_15():
         frame15 = tk.LabelFrame(mainProject)
@@ -3427,8 +3519,8 @@ def createNewProject():
 
         def next_14():
             global pageNumber
-            with open("page15_data.json", "w") as f:
-                json.dump({"assessment": [policyAssessmentTable.item(i)['values'] for i in policyAssessmentTable.get_children()]}, f)
+        ##    with open("page15_data.json", "w") as f:
+        ##        json.dump({"assessment": [policyAssessmentTable.item(i)['values'] for i in policyAssessmentTable.get_children()]}, f)
             save()
             pageNumber += 1
             for widget in mainProject.winfo_children():
@@ -3437,15 +3529,15 @@ def createNewProject():
             new_project()  # Reset to page_1 or home page
 
         setup_page_common(15, "Monitoring and Evaluation Plan", frame15, widgets_to_destroy, back_14, next_14)
-        try:
-            with open("page15_data.json", "r") as f:
-                data = json.load(f)
-                for item in data.get("assessment", []):
-                    policyAssessmentTable.insert("", "end", values=item)
-        except FileNotFoundError:
-            for i, (goal, indicator) in enumerate(zip(p7policyGoalsandObjectives, p7indicators)):
-                policyAssessmentTable.insert("", 'end', values=(goal, indicator, "", "", "", "", ""))
-
+        ##try:
+        ##    with open("page15_data.json", "r") as f:
+        ##        data = json.load(f)
+        ##        for item in data.get("assessment", []):
+        ##            policyAssessmentTable.insert("", "end", values=item)
+        ##except FileNotFoundError:
+        ##    for i, (goal, indicator) in enumerate(zip(p7policyGoalsandObjectives, p7indicators)):
+        ##        policyAssessmentTable.insert("", 'end', values=(goal, indicator, "", "", "", "", ""))
+##
     # projectTitle.config(bg="white")
     # fontSize.config(bg="white")
     # polAnaTitle.config(bg="white")
@@ -3472,18 +3564,76 @@ def createNewProject():
     # fileobject.close()
 
 def save():
-    global pageNumber, save_file_path
+    global pageNumber, save_pdf_file_path, save_json_file_path, p1projecttitle
     
-    if save_file_path is None:
-        save_file_path = asksaveasfilename(
+    if save_pdf_file_path is None:
+        save_pdf_file_path = asksaveasfilename(
             defaultextension=".pdf",
             filetypes=[("PDF files", "*.pdf")],
             initialfile=p1projecttitle + ".pdf",
             title="Save PDF As"
         )
-    if not save_file_path:
+    if not save_pdf_file_path:
         return  # User canceled save
 
+    if save_json_file_path is None:
+        save_json_file_path = asksaveasfilename(
+            defaultextension=".json",
+            filetypes=[("JSON FILES", "*.json")],
+            initialfile=p1projecttitle + ".json",
+            title="Save Project As"
+        )
+    if not save_json_file_path:
+        return  # User canceled save
+    
+    # Create the project json
+    global p1analysts, p1fontstyle, p1policyanalysis, p1fontsize
+    global p2problematicsituation, p2undesirableeffects
+    global p3efforts, p3accomplishments, p3assessments
+    global p5rootcause, p5assessments
+    global p6policyproblem, p6policyissue
+    global p7policyGoalsandObjectives, p7indicators
+    global p8stakeholders, p8actors
+    global p9altnum, p9alternatives
+    global p10spillovers, p10externalities, p10constraints, p10mitimeasures
+    global p11BPAdescription, p11BPAreasonSelect
+    global p12BPAspillover, p12BPAexternality, p12BPAconstraint, p12BPAmitigatingmeasure
+
+    data = {
+        "p1projecttitle": p1projecttitle,
+        "p1analysts": p1analysts,
+        "p1fontstyle": p1fontstyle,
+        "p1policyanalysis": p1policyanalysis,
+        "p1fontsize": p1fontsize,
+        "p2problematicsituation": p2problematicsituation,
+        "p2undesirableeffects": p2undesirableeffects,
+        "p3efforts": p3efforts,
+        "p3accomplishments": p3accomplishments,
+        "p3assessments": p3assessments,
+        "p5rootcause": p5rootcause,
+        "p5assessments": p5assessments,
+        "p6policyproblem": p6policyproblem,
+        "p6policyissue": p6policyissue,
+        "p7policyGoalsandObjectives": p7policyGoalsandObjectives,
+        "p7indicators": p7indicators,
+        "p8stakeholders": p8stakeholders,
+        "p8actors": p8actors,
+        "p9altnum": p9altnum,
+        "p9alternatives": p9alternatives,
+        "p10spillovers": p10spillovers,
+        "p10externalities": p10externalities,
+        "p10constraints": p10constraints,
+        "p10mitimeasures": p10mitimeasures,
+        "p11BPAdescription": p11BPAdescription,
+        "p11BPAreasonSelect": p11BPAreasonSelect,
+        "p12BPAspillover": p12BPAspillover,
+        "p12BPAexternality": p12BPAexternality,
+        "p12BPAconstraint": p12BPAconstraint,
+        "p12BPAmitigatingmeasure": p12BPAmitigatingmeasure
+    }
+
+    with open(save_json_file_path, 'w') as json_file:
+        json.dump(data, json_file, indent=4)
 
     pdf = FPDF()   
 
@@ -3525,7 +3675,7 @@ def save():
 
     # save the pdf with name .pdf
     
-    pdf.output(save_file_path, 'F')
+    pdf.output(save_pdf_file_path, 'F')
 
 def print_file():
 
