@@ -4,7 +4,7 @@ from tkinter import font
 from tkinter import ttk, messagebox, colorchooser
 from tkinter import scrolledtext 
 from tkinter import colorchooser
-from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import askopenfilename, asksaveasfilename
 
 import textwrap
 import json
@@ -29,10 +29,11 @@ import sklearn as skl
 from sklearn.linear_model import LinearRegression, LogisticRegression
 
 # Hamdi addition
-import tkinter.tix as tix
+#import tkinter.tix as tix 
 
 global size, var, pageNumber
 size = 10
+global save_pdf_file_path, save_json_file_path
 save_pdf_file_path = None
 save_json_file_path = None
 
@@ -116,6 +117,66 @@ reveiwerLabel.pack(pady=5, padx=50, anchor="w")
 adminLabel.pack(pady=5, padx=50, anchor="w")
 style = ttk.Style()
 
+###Bmae addition: for saving and opening projects
+global p1projecttitle, p1analysts, p1fontstyle, p1policyanalysis, p1fontsize
+
+p1projecttitle = " "
+p1analysts = " "
+p1fontstyle = " "
+p1policyanalysis = " "
+p1fontstyle = " "
+p1fontsize = 12
+
+global p2problematicsituation, p2undesirableeffects
+
+p2problematicsituation = ""
+p2undesirableeffects = ""
+
+global p3efforts, p3accomplishments, p3assessments
+p3efforts = []
+p3accomplishments = []
+p3assessments = []
+
+global p5rootcause, p5existingpolicies, p5relevantprov, p5accomplishments, p5assessments    
+p5rootcause = " "
+p5existingpolicies = []
+p5relevantprov = []
+p5accomplishments = []
+p5assessments = []
+
+global p6policyproblem, p6policyissue
+p6policyproblem = " "
+p6policyissue = ""
+
+global p7policyGoalsandObjectives, p7indicators
+p7policyGoalsandObjectives = []
+p7indicators = []
+
+global p8stakeholders, p8actors
+p8stakeholders = []
+p8actors = []
+
+global p9altnum, p9alternatives
+p9altnum = []
+p9alternatives = []
+
+global p10spillovers, p10externalities, p10constraints, p10mitimeasures
+p10spillovers = ""
+p10externalities = ""
+p10constraints =""
+p10mitimeasures = ""
+
+global p11BPAdescription, p11BPAreasonSelect
+p11BPAdescription = ""
+p11BPAreasonSelect = ""
+
+global p12BPAspillover, p12BPAexternality, p12BPAconstraint, p12BPAmitigatingmeasure
+p12BPAspillover = ""
+p12BPAexternality = ""
+p12BPAconstraint = ""
+p12BPAmitigatingmeasure = ""
+
+
 # Menu setup
 # def setup_menu():
 #     menubar = tk.Menu(main)
@@ -136,11 +197,11 @@ def new_project():
     page_1()  # Assumed defined elsewhere
 
 def open_project():
-
+    global save_pdf_file_path, save_json_file_path
     global p1projecttitle, p1analysts, p1fontstyle, p1policyanalysis, p1fontsize
     global p2problematicsituation, p2undesirableeffects
     global p3efforts, p3accomplishments, p3assessments
-    global p5rootcause, p5assessments
+    global p5rootcause, p5existingpolicies, p5relevantprov, p5accomplishments, p5assessments
     global p6policyproblem, p6policyissue
     global p7policyGoalsandObjectives, p7indicators
     global p8stakeholders, p8actors
@@ -154,7 +215,8 @@ def open_project():
     if filename:
         with open(filename, "r") as f:
             data = json.load(f)
-
+        save_pdf_file_path = data.get("save_pdf_file_path", None)
+        save_json_file_path = data.get("save_json_file_path", None)
         p1projecttitle = data.get("p1projecttitle", "")
         p1analysts = data.get("p1analysts", "")
         p1fontstyle = data.get("p1fontstyle", "")
@@ -241,7 +303,14 @@ def createNewProject():
 
     global filename, fileobject
 
+
     mainProject = Toplevel(root)
+    mainProject.transient(root)           # Attach to root
+    mainProject.grab_set()                # Make it modal (disables root interaction)
+    mainProject.lift()                    # Raise it to the top
+    mainProject.focus_force()             # Bring focus
+    mainProject.attributes("-topmost", 1) # Stay on top initially
+    mainProject.after(10, lambda: mainProject.attributes("-topmost", 0))  # Release topmost after lift
     
     varRoot1 = tk.IntVar()
     varRoot2 = tk.IntVar()
@@ -779,10 +848,8 @@ def createNewProject():
             page_4()
 
     def page_4():
-        global var
-        var = tk.IntVar()
-        mainProject.state('zoomed')
-        style.configure("TButton", foreground="black", font=("Arial", 10))
+        mainProject.geometry("660x210")
+
         frame4 = tk.LabelFrame(mainProject)
 
         global var
@@ -858,6 +925,7 @@ def createNewProject():
                 plt.xlabel(column_names[0])
                 plt.ylabel(column_names[1])
                 plt.show()
+                page_5()
 
             elif(int(var.get()) == 2):
                 analysis = Toplevel(main)
@@ -937,6 +1005,7 @@ def createNewProject():
 
                 plt.savefig('regplot.png')
                 plt.show()
+                page_5()
 
                 # l = tk.Label(frame, text="Hello", font="-size 50")
                 # l.pack()
@@ -1006,12 +1075,20 @@ def createNewProject():
                 plt.plot(X_test, y_test, label="Logistic Regression Model", color="red", linewidth=3)
                 plt.savefig('regplot.png')
                 plt.show() 
-
+                page_5()
             
             elif(int(var.get()) == 4):
                 analysis = Toplevel(main)
                 analysis.title("Analysis - Problem Tree Analysis")
                 analysis.geometry("830x480")
+
+                # Ensure it's in front
+                analysis.transient(root)
+                analysis.grab_set()
+                analysis.lift()
+                analysis.focus_force()
+                analysis.attributes("-topmost", 1)
+                analysis.after(10, lambda: analysis.attributes("-topmost", 0))
 
                 class ShapeEditorApp:
 
@@ -1031,16 +1108,21 @@ def createNewProject():
                         self.start_x = None
                         self.start_y = None
                         self.current_shape_item = None
+                        
+                        self.pen_active = False
+                        self.eraser_active = False
 
                         # Create buttons
                         self.color_button = tk.Button(root, text="Color", command=self.choose_color)
                         self.pen_button = Button(root, text='Pen', command=self.use_pen)
+                        self.eraser_button = tk.Button(root, text="Eraser", command=self.use_eraser)
                         self.rect_button = tk.Button(root, text="Rectangle", command=self.create_rectangle)
                         self.circle_button = tk.Button(root, text="Arrow", command=self.create_arrow)
                         self.clear_button = tk.Button(root, text="Clear", command=self.clear_canvas)
                         self.text_frame = Frame(root, height=100, width=200, relief=SUNKEN, borderwidth=3)
                         self.text_entry = Entry(self.text_frame, textvariable=textValue, bg="white" , width=20)
                         self.pen_button.pack(side=tk.LEFT)
+                        self.eraser_button.pack(side=tk.LEFT)
                         self.clear_button.pack(side=tk.LEFT)
                         self.color_button.pack(side=tk.LEFT)
                         self.rect_button.pack(side=tk.LEFT)
@@ -1059,21 +1141,35 @@ def createNewProject():
                         self.canvas.create_text(event.x, event.y, text=textValue.get())
                     
                     def use_pen(self):
-                        self.activate_button(self.pen_button)
+                        self.pen_active = True
+                        self.eraser_active = False
+                        self.current_shape = None
+
+                    def use_eraser(self):
+                        self.pen_active = False
+                        self.eraser_active = True
+                        self.current_shape = None
 
                     def choose_color(self):
                         global color 
                         color = colorchooser.askcolor(title="Choose color")
 
                     def create_rectangle(self):
+                        self.pen_active = False
+                        self.eraser_active = False
                         self.current_shape = "rectangle"
 
                     def create_arrow(self):
+                        self.pen_active = False
+                        self.eraser_active = False
                         self.current_shape = "arrow"
 
                     def start_draw(self, event):
                         self.start_x = event.x
                         self.start_y = event.y
+                        if self.pen_active:
+                            # Just store the starting point; nothing to draw yet
+                            return
                         if self.current_shape == "rectangle":
                             self.current_shape_item = self.canvas.create_rectangle(
                                 self.start_x, self.start_y, self.start_x, self.start_y, outline=color[1]
@@ -1084,7 +1180,13 @@ def createNewProject():
                             )
 
                     def draw_shape(self, event):
-                        if self.current_shape_item:
+                        if self.pen_active:
+                            self.canvas.create_line(self.start_x, self.start_y, event.x, event.y, fill=color[1])
+                            self.start_x, self.start_y = event.x, event.y
+                        elif self.eraser_active:
+                            self.canvas.create_line(self.start_x, self.start_y, event.x, event.y, fill="white", width=10)
+                            self.start_x, self.start_y = event.x, event.y
+                        elif self.current_shape_item:
                             x, y = event.x, event.y
                             self.canvas.coords(self.current_shape_item, self.start_x, self.start_y, x, y)
 
@@ -1095,6 +1197,8 @@ def createNewProject():
                         self.canvas.delete("all")
 
                 app = ShapeEditorApp(analysis)
+                page_5()
+        
         
         def back_3():
             global pageNumber
@@ -1115,186 +1219,189 @@ def createNewProject():
             btnBack3.destroy()
             btnNext3.destroy() 
             analyses()
-            page_5()
+
 
         btnBack3 = Button(mainProject, text = "Back", width=10, command = lambda: back_3())
         btnNext3 = Button(mainProject, text = "Next", width=10, command = lambda: next_3())
         btnBack3.place(x=190, y=170)
         btnNext3.place(x=380, y=170)
-        
-    global p5rootcause
-    p5rootcause = " "
 
-    def page_5():
-        global p5rootcause, assessmentTuple
+    def page_5(): 
+        global p5rootcause, p5existingpolicies, p5relevantprov, p5accomplishments, p5assessments  
+
+        mainProject.state('zoomed')
+        style.configure('Treeview', rowheight=320)
+
         frame5 = tk.LabelFrame(mainProject)
-        widgets_to_destroy = [frame5]
-        undo_stack = []
 
-        root_cause_label = tk.Label(frame5, text="Root Cause of the Problem", font=("Arial", 12, "bold"))
-        root_cause = tk.Entry(frame5, width=100)
-        assessment_label = tk.Label(frame5, text="Assessment of Existing Policies that Address the Root Cause", font=("Arial", 12, "bold"))
-        assessment_table = ttk.Treeview(frame5, selectmode="browse", height=2)
-        assessment_table["columns"] = ("1", "2", "3", "4")
-        assessment_table['show'] = 'headings'
-        assessment_table.column("1", width=150, anchor='c')
-        assessment_table.column("2", width=650, anchor='c')
-        assessment_table.column("3", width=400, anchor='c')
-        assessment_table.column("4", width=300, anchor='c')
-        assessment_table.heading("1", text="Existing Policy")
-        assessment_table.heading("2", text="Relevant Provision(s)")
-        assessment_table.heading("3", text="Accomplishments")
-        assessment_table.heading("4", text="Assessment")
-        sb_y = ttk.Scrollbar(frame5, orient="vertical", command=assessment_table.yview)
-        sb_x = ttk.Scrollbar(frame5, orient="horizontal", command=assessment_table.xview)
-        assessment_table.configure(yscrollcommand=sb_y.set, xscrollcommand=sb_x.set)
+        # FIX: define a new status label before using it
+        status = ttk.Label(mainProject, text="")
+        status.place(x=10, y=700)
+        
+        rootCauseLabel = Label(frame5, text = "Root Cause of the Problem")
+        rootCause = Entry(frame5, width=200)
 
-        exist_label = tk.Label(mainProject, text="Existing Policy")
-        rele_label = tk.Label(mainProject, text="Relevant Provision")
-        accomp_label = tk.Label(mainProject, text="Accomplishment")
-        assess_label = tk.Label(mainProject, text="Assessment")
-        existing_policy = scrolledtext.ScrolledText(mainProject, height=9, width=40)
-        relevant_provision = scrolledtext.ScrolledText(mainProject, height=9, width=40)
-        accomplishment2 = scrolledtext.ScrolledText(mainProject, height=9, width=40)
-        assessment2 = scrolledtext.ScrolledText(mainProject, height=9, width=40)
-        add_button = ttk.Button(mainProject, text="Add", command=lambda: add_data2())
-        edit_button = ttk.Button(mainProject, text="Edit", state="disabled", command=lambda: edit_data2())
-        delete_button = ttk.Button(mainProject, text="Delete", state="disabled", command=lambda: delete_data2())
-        ToolTip(add_button, "Add a new entry to the table")
-        ToolTip(edit_button, "Edit the selected table entry")
-        ToolTip(delete_button, "Delete the selected table entry")
+        assessmentLabel = Label(frame5, text = "Assessment of Existing Policies that Address the Root Cause")
+        assessmentTable=ttk.Treeview(frame5, selectmode="browse", height=1)
+        assessmentTable["columns"]=("1","2","3","4")
+        assessmentTable['show']='headings'
+        assessmentTable.column("1",width=150,anchor='c')
+        assessmentTable.column("2",width=650,anchor='c')
+        assessmentTable.column("3",width=400,anchor='c')
+        assessmentTable.column("4",width=300,anchor='c')
+        assessmentTable.heading("1",text="Existing Policy")
+        assessmentTable.heading("2",text="Relevant Provision(s)")
+        assessmentTable.heading("3",text="Accomplishments")
+        assessmentTable.heading("4",text="Assessment")
 
-        root_cause_label.grid(row=0, column=0, columnspan=2, pady=10)
-        root_cause.grid(row=1, column=0, columnspan=2, padx=10)
-        assessment_label.grid(row=2, column=0, columnspan=2, pady=10)
-        assessment_table.grid(row=3, column=0)
-        sb_y.grid(row=3, column=1, sticky="ns")
-        sb_x.grid(row=4, column=0, sticky="ew")
-        exist_label.place(relx=0.1, rely=0.6)
-        existing_policy.place(relx=0.05, rely=0.65)
-        rele_label.place(relx=0.3, rely=0.6)
-        relevant_provision.place(relx=0.25, rely=0.65)
-        accomp_label.place(relx=0.5, rely=0.6)
-        accomplishment2.place(relx=0.45, rely=0.65)
-        assess_label.place(relx=0.7, rely=0.6)
-        assessment2.place(relx=0.65, rely=0.65)
-        add_button.place(relx=0.4, rely=0.85)
-        edit_button.place(relx=0.5, rely=0.85)
-        delete_button.place(relx=0.6, rely=0.85)
+        existLabel = Label(mainProject, text = "Existing Policy")
+        releLabel = Label(mainProject, text = "Relevant Provision")
+        accompLabel2 = Label(mainProject, text = "Accomplishment")
+        assessLabel2 = Label(mainProject, text = "Assessment")
+
+        existingPolicy = scrolledtext.ScrolledText(mainProject, height = 9, width=40)
+        relevantProvision = scrolledtext.ScrolledText(mainProject, height = 9, width=40)
+        accomplishment2 = scrolledtext.ScrolledText(mainProject, height = 9, width=40)
+        assessment2 = scrolledtext.ScrolledText(mainProject, height = 9, width=40)
+
+        addButton2 = tk.Button(mainProject, text='Add', width=10, command=lambda: add_data2())  
+        editButton2 = tk.Button(mainProject, text="Edit", width=10, command=lambda: edit_data2())
 
         def show_data2(a):
-            existing_policy.delete("1.0", tk.END)
-            relevant_provision.delete("1.0", tk.END)
-            accomplishment2.delete("1.0", tk.END)
-            assessment2.delete("1.0", tk.END)
-            selected_item = assessment_table.selection()
-            if selected_item:
-                edit_button.config(state="normal")
-                delete_button.config(state="normal")
-                values = assessment_table.item(selected_item[0])['values']
-                existing_policy.insert("1.0", values[0])
-                relevant_provision.insert("1.0", values[1])
-                accomplishment2.insert("1.0", values[2])
-                assessment2.insert("1.0", values[3])
-            else:
-                edit_button.config(state="disabled")
-                delete_button.config(state="disabled")
+            existingPolicy.delete(0,END)
+            relevantProvision.delete(0,END)
+            accomplishment2.delete(0,END)
+            assessment2.delete(0,END)
 
-        def add_data2():
-            texts = [
-                existing_policy.get("1.0", tk.END).strip(),
-                relevant_provision.get("1.0", tk.END).strip(),
-                accomplishment2.get("1.0", tk.END).strip(),
-                assessment2.get("1.0", tk.END).strip()
-            ]
-            if not all(texts):
-                messagebox.showerror("Error", "Please fill out all fields")
-                return
-            item_id = assessment_table.insert("", 'end', values=texts)
-            undo_stack.append(("add", item_id))
-            global assessmentTuple
-            assessmentTuple = texts
-            existing_policy.delete("1.0", tk.END)
-            relevant_provision.delete("1.0", tk.END)
-            accomplishment2.delete("1.0", tk.END)
-            assessment2.delete("1.0", tk.END)
-            existing_policy.focus()
+            selectedItem = assessmentTable.selection()[0]
+            existingPolicy.insert(0, assessmentTable.item(selectedItem)['values'][0])
+            relevantProvision.insert(0, assessmentTable.item(selectedItem)['values'][1])
+            accomplishment2.insert(0, assessmentTable.item(selectedItem)['values'][2])
+            assessment2.insert(0, assessmentTable.item(selectedItem)['values'][3])
+
+        assessmentTable.bind("<<TreeviewSelect>>", show_data2)
 
         def edit_data2():
-            texts = [
-                existing_policy.get("1.0", tk.END).strip(),
-                relevant_provision.get("1.0", tk.END).strip(),
-                accomplishment2.get("1.0", tk.END).strip(),
-                assessment2.get("1.0", tk.END).strip()
-            ]
-            if not all(texts):
-                messagebox.showerror("Error", "Please fill out all fields")
-                return
-            selected_item = assessment_table.selection()[0]
-            old_values = assessment_table.item(selected_item)['values']
-            undo_stack.append(("edit", selected_item, old_values))
-            assessment_table.item(selected_item, values=texts)
-            global assessmentTuple
-            assessmentTuple = texts
+            existingPolicyText = existingPolicy.get("1.0", tk.END)               # read existing policy
+            relevantProvisionText = relevantProvision.get("1.0", tk.END)         # read relevant provision
+            accomplishment2Text = accomplishment2.get("1.0", tk.END)             # read accomplishment 
+            assessment2Text = assessment2.get("1.0", tk.END)                     # read assessment                 
+                                    
+            selected_item = assessmentTable.selection()[0]
+            assessmentTable.item(selected_item, text="blub", values=(existingPolicyText, relevantProvisionText, accomplishment2Text, assessment2Text))
 
-        def delete_data2():
-            selected_item = assessment_table.selection()
-            if selected_item:
-                item_id = selected_item[0]
-                old_values = assessment_table.item(item_id)['values']
-                undo_stack.append(("delete", item_id, old_values))
-                assessment_table.delete(item_id)
-                existing_policy.delete("1.0", tk.END)
-                relevant_provision.delete("1.0", tk.END)
-                accomplishment2.delete("1.0", tk.END)
-                assessment2.delete("1.0", tk.END)
-                edit_button.config(state="disabled")
-                delete_button.config(state="disabled")
-            else:
-                # Handle other statistical methods (Linear, Multiple, Logistic Regression)
-                method_names = {1: "Linear Regression", 2: "Multiple Regression", 3: "Logistic Regression"}
-                method = method_names.get(var.get(), "Unknown Method")
-                result_label = tk.Label(content_frame, text=f"Results for {method} will be displayed here.", font=("Arial", 12))
-                result_label.pack(pady=10)
+        def add_data2():
+            existingPolicyText = existingPolicy.get("1.0", tk.END)               # read existing policy
+            relevantProvisionText = relevantProvision.get("1.0", tk.END)         # read relevant provision
+            accomplishment2Text = accomplishment2.get("1.0", tk.END)             # read accomplishment 
+            assessment2Text = assessment2.get("1.0", tk.END)                     # read assessment      
+
+            p5existingpolicies.append(existingPolicyText)
+            p5relevantprov.append(relevantProvisionText)
+            p5accomplishments.append(accomplishment2Text)
+            p5assessments.append(assessment2Text)
+
+            assessmentTable.insert("", 'end', values=(
+                wrap(existingPolicyText),
+                wrap(relevantProvisionText),
+                wrap(accomplishment2Text),
+                wrap(assessment2Text)
+            ))
+
+            existingPolicy.delete('1.0', END)
+            relevantProvision.delete('1.0', END)
+            accomplishment2.delete('1.0', END)
+            assessment2.delete('1.0', END)
+            existingPolicy.focus()
+
+        frame5.place(x=10, y=10)
+        rootCauseLabel.grid(row=0, column=1)
+        rootCause.grid(row=1, column=1)
+        assessmentLabel.grid(row=2, column=1)
+        assessmentTable.grid(row=3, column=1)
+        existLabel.place(x=150, y=480)
+        existingPolicy.place(x=40, y=510)
+        releLabel.place(x=520, y=480)
+        relevantProvision.place(x=410, y=510)
+        accompLabel2.place(x=900, y=480)
+        accomplishment2.place(x=780, y=510)
+        assessLabel2.place(x=1280, y=480)
+        assessment2.place(x=1150, y=510)
+        addButton2.place(x=640, y=690)
+        editButton2.place(x=790, y=690)
+
+        if len(p5existingpolicies) == len(p5relevantprov) == len(p5accomplishments) == len(p5assessments):
+            for ep, rp, ac, asmt in zip(p5existingpolicies, p5relevantprov, p5accomplishments, p5assessments):
+                assessmentTable.insert("", "end", values=(wrap(ep), wrap(rp), wrap(ac), wrap(asmt)))
 
         def back_4():
             global pageNumber
             pageNumber -= 1
-            for widget in mainProject.winfo_children():
-                widget.destroy()
+            print(pageNumber)
+            mainProject.state('normal')
+            frame5.destroy() 
+            existLabel.destroy()
+            existingPolicy.destroy()
+            existingPolicy.place_forget()
+            releLabel.destroy()
+            relevantProvision.destroy()
+            relevantProvision.place_forget()
+            accompLabel2.destroy()
+            accomplishment2.destroy()
+            accomplishment2.place_forget()
+            assessLabel2.destroy()
+            assessment2.destroy()
+            assessment2.place_forget()
+            btnBack4.destroy()
+            btnNext4.destroy() 
+            addButton2.destroy()
+            editButton2.destroy()
             page_4()
+            
 
         def next_4():
-            global pageNumber, p5rootcause
-            p5rootcause = root_cause.get().strip()
-            if not p5rootcause:
-                status.config(text="Enter root cause", foreground="red")
-                status.place(relx=0.01, rely=0.9)
-                return
-            with open("page5_data.json", "w") as f:
-                json.dump({"root_cause": p5rootcause, "assessments": [assessment_table.item(i)['values'] for i in assessment_table.get_children()]}, f)
+            global pageNumber
             pageNumber += 1
-            for widget in mainProject.winfo_children():
-                widget.destroy()
+            print(pageNumber)
+            global p5rootcause
+            p5rootcause = rootCause.get()
+            if not p5rootcause.strip():
+                status.config(
+                    text="Enter root cause",
+                    foreground="red",
+                )
+                return
+            
+            mainProject.state('normal')
+            frame5.destroy() 
+            existLabel.destroy()
+            existingPolicy.destroy()
+            existingPolicy.place_forget()
+            releLabel.destroy()
+            relevantProvision.destroy()
+            relevantProvision.place_forget()
+            accompLabel2.destroy()
+            accomplishment2.destroy()
+            accomplishment2.place_forget()
+            assessLabel2.destroy()
+            assessment2.destroy()
+            assessment2.place_forget()
+            btnBack4.destroy()
+            btnNext4.destroy() 
+            addButton2.destroy()
+            editButton2.destroy()
+            save()
             page_6()
 
-        setup_page_common(5, "Root Cause and Policy Assessment", frame5, widgets_to_destroy, back_4, next_4)
-        try:
-            with open("page5_data.json", "r") as f:
-                data = json.load(f)
-                p5rootcause = data.get("root_cause", "")
-                root_cause.insert(0, p5rootcause)
-                for item in data.get("assessments", []):
-                    assessment_table.insert("", "end", values=item)
-        except FileNotFoundError:
-            pass
+        btnBack4 = Button(mainProject, text = "Back", width=10, command = lambda: back_4())
+        btnNext4 = Button(mainProject, text = "Next", width=10, command = lambda: next_4())
+        btnBack4.place(x=640, y=750)
+        btnNext4.place(x=790, y=750)
+        status.place(x=10, y=700)
 
-    global p6policyproblem, p6policyissue
-    p6policyproblem = " "
-    p6policyissue = " "
+
 
     def page_6():
-        global mainProject, pageNumber, p6policyproblem
         # Initialize p6policyproblem as a StringVar to store the policy problem text
         p6policyproblem = tk.StringVar(value="")  # Default to empty string
         mainProject.state('zoomed')
@@ -1350,8 +1457,6 @@ def createNewProject():
         except FileNotFoundError:
             pass
 
-    p7policyGoalsandObjectives = []
-    p7indicators = []
 
     def page_7():
         global p7policyGoalsandObjectives, p7indicators
@@ -1658,9 +1763,6 @@ def createNewProject():
         ##            p8actors.append(a)
         ##except FileNotFoundError:
         ##    pass
-
-    global p9alternatives
-    p9alternatives = []
     
     def page_9():           
         mainProject.geometry("870x545")
@@ -3478,18 +3580,81 @@ def createNewProject():
     # fileobject.close()
 
 def save():
-    global pageNumber, save_file_path
+    global pageNumber, save_pdf_file_path, save_json_file_path, p1projecttitle
     
-    if save_file_path is None:
-        save_file_path = asksaveasfilename(
+    if save_pdf_file_path is None:
+        save_pdf_file_path = asksaveasfilename(
             defaultextension=".pdf",
             filetypes=[("PDF files", "*.pdf")],
             initialfile=p1projecttitle + ".pdf",
             title="Save PDF As"
         )
-    if not save_file_path:
+    if not save_pdf_file_path:
         return  # User canceled save
+    
+    if save_json_file_path is None:
+        save_json_file_path = asksaveasfilename(
+            defaultextension=".json",
+            filetypes=[("JSON FILES", "*.json")],
+            initialfile=p1projecttitle + ".json",
+            title="Save Project As"
+        )
+    if not save_json_file_path:
+        return  # User canceled save
+    
+    # Create the project json
+    global p1analysts, p1fontstyle, p1policyanalysis, p1fontsize
+    global p2problematicsituation, p2undesirableeffects
+    global p3efforts, p3accomplishments, p3assessments
+    global p5rootcause, p5existingpolicies, p5relevantprov, p5accomplishments, p5assessments
+    global p6policyproblem, p6policyissue
+    global p7policyGoalsandObjectives, p7indicators
+    global p8stakeholders, p8actors
+    global p9altnum, p9alternatives
+    global p10spillovers, p10externalities, p10constraints, p10mitimeasures
+    global p11BPAdescription, p11BPAreasonSelect
+    global p12BPAspillover, p12BPAexternality, p12BPAconstraint, p12BPAmitigatingmeasure
 
+    data = {
+        "save_pdf_file_path": save_pdf_file_path,
+        "save_json_file_path": save_json_file_path,
+        "p1projecttitle": p1projecttitle,
+        "p1analysts": p1analysts,
+        "p1fontstyle": p1fontstyle,
+        "p1policyanalysis": p1policyanalysis,
+        "p1fontsize": p1fontsize,
+        "p2problematicsituation": p2problematicsituation,
+        "p2undesirableeffects": p2undesirableeffects,
+        "p3efforts": p3efforts,
+        "p3accomplishments": p3accomplishments,
+        "p3assessments": p3assessments,
+        "p5rootcause": p5rootcause,
+        "p5existingpolicies": p5existingpolicies,
+        "p5relevantprov": p5relevantprov,
+        "p5accomplishments": p5accomplishments,
+        "p5assessments": p5assessments,
+        "p6policyproblem": p6policyproblem,
+        "p6policyissue": p6policyissue,
+        "p7policyGoalsandObjectives": p7policyGoalsandObjectives,
+        "p7indicators": p7indicators,
+        "p8stakeholders": p8stakeholders,
+        "p8actors": p8actors,
+        "p9altnum": p9altnum,
+        "p9alternatives": p9alternatives,
+        "p10spillovers": p10spillovers,
+        "p10externalities": p10externalities,
+        "p10constraints": p10constraints,
+        "p10mitimeasures": p10mitimeasures,
+        "p11BPAdescription": p11BPAdescription,
+        "p11BPAreasonSelect": p11BPAreasonSelect,
+        "p12BPAspillover": p12BPAspillover,
+        "p12BPAexternality": p12BPAexternality,
+        "p12BPAconstraint": p12BPAconstraint,
+        "p12BPAmitigatingmeasure": p12BPAmitigatingmeasure
+    }
+
+    with open(save_json_file_path, 'w') as json_file:
+        json.dump(data, json_file, indent=4)
 
     pdf = FPDF()   
 
@@ -3530,7 +3695,7 @@ def save():
 
     # save the pdf with name .pdf
     
-    pdf.output(save_file_path, 'F')
+    pdf.output(save_pdf_file_path, 'F')
 
 def print_file():
 
@@ -3552,9 +3717,11 @@ menubar = Menu(root)
 file1 = Menu(menubar, tearoff = 0) 
 menubar.add_cascade(label ='File', menu = file1) 
 file1.add_command(label ='Create New', command = lambda: createNewProject())
+file1.add_command(label ='Open Project', command = lambda: open_project())
 file1.add_command(label ='Save', command = lambda: save()) 
 file1.add_command(label ='Print', command = lambda: print_file()) 
 file1.add_separator() 
+file1.add_command(label ='Help', command = lambda: help_page()) 
 file1.add_command(label ='Exit', command = lambda: quit())
 
 root.config(menu=menubar)
