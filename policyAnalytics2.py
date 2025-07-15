@@ -1808,7 +1808,7 @@ def createNewProject():
         goals_and_obj_table.heading("1", text="Policy Goals and Objectives")
         goals_and_obj_table.heading("2", text="Indicators")
 
-        sb_y = ttk.Scrollbar(frame7, orient="vertical", command=goals_and_obj_table.yview)
+        sb_y = ttk.Scrollbar(frame7, orient="vertical", commanZd=goals_and_obj_table.yview)
         sb_x = ttk.Scrollbar(frame7, orient="horizontal", command=goals_and_obj_table.xview)
         goals_and_obj_table.configure(yscrollcommand=sb_y.set, xscrollcommand=sb_x.set)
 
