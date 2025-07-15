@@ -753,12 +753,19 @@ def createNewProject():
     
  
     def page_3():
+
+        # Progress indicator
+        progress_label = tk.Label(mainProject, text="Page 3 of 15: Current Efforts", font=("Arial", 12, "bold"))
+        progress_label.place(x=10, y=50)
+
         global p3efforts, p3accomplishments, p3assessments
         mainProject.geometry("1250x700")
         style = ttk.Style()
         style.configure('Treeview', rowheight=160)
         style.configure("TButton", foreground="black", font=("Arial", 10))  # Set button text to black
 
+
+        
         # Undo stack
         undo_stack = []
 
@@ -793,9 +800,7 @@ def createNewProject():
         zoom_in_button.place(x=10, y=10)
         zoom_out_button.place(x=100, y=10)
 
-        # Progress indicator
-        progress_label = tk.Label(mainProject, text="Page 3 of 15: Current Efforts", font=("Arial", 12, "bold"))
-        progress_label.place(x=10, y=50)
+
 
         # Treeview with scrollbars
         currEffLabel = tk.Label(frame3, text="Current Efforts/Measures of the Government to Solve the Situational Problem")
@@ -970,6 +975,11 @@ def createNewProject():
             page_4()
 
     def page_4():
+
+        # Progress indicator
+        progress_label = tk.Label(mainProject, text="Page 4 of 15: Select Statistical Methods", font=("Arial", 12, "bold"))
+        progress_label.place(x=10, y=50)
+
         mainProject.geometry("660x210")
 
         frame4 = tk.LabelFrame(mainProject)
@@ -1047,6 +1057,7 @@ def createNewProject():
                 plt.xlabel(column_names[0])
                 plt.ylabel(column_names[1])
                 plt.show()
+                page_5()
 
             elif(int(var.get()) == 2):
                 analysis = Toplevel(main)
@@ -1126,6 +1137,7 @@ def createNewProject():
 
                 plt.savefig('regplot.png')
                 plt.show()
+                page_5()
 
                 # l = tk.Label(frame, text="Hello", font="-size 50")
                 # l.pack()
@@ -1195,7 +1207,8 @@ def createNewProject():
                 plt.plot(X_test, y_test, label="Logistic Regression Model", color="red", linewidth=3)
                 plt.savefig('regplot.png')
                 plt.show() 
-            
+                page_5()
+                page_5()
             elif(int(var.get()) == 4):
                 analysis = Toplevel(main)
                 analysis.title("Analysis - Problem Tree Analysis")
@@ -1210,7 +1223,6 @@ def createNewProject():
                 analysis.after(10, lambda: analysis.attributes("-topmost", 0))
 
                 class ShapeEditorApp:
-
                     def __init__(self, root):
                         global textValue
                         textValue = StringVar()
@@ -1219,39 +1231,65 @@ def createNewProject():
                         self.root = root
                         self.root.title("Problem Tree Analysis")
 
-                        # Create Canvas widget
-                        self.canvas = tk.Canvas(analysis, bg="white")
-                        self.canvas.pack(fill=tk.BOTH, expand=True)
+                        # Create Canvas widget with scrollbars
+                        self.canvas_frame = tk.Frame(root)
+                        self.canvas_frame.pack(fill=tk.BOTH, expand=True)
+                        
+                        self.scroll_x = tk.Scrollbar(self.canvas_frame, orient=tk.HORIZONTAL)
+                        self.scroll_y = tk.Scrollbar(self.canvas_frame, orient=tk.VERTICAL)
+                        self.canvas = tk.Canvas(self.canvas_frame, bg="white", 
+                                            xscrollcommand=self.scroll_x.set, 
+                                            yscrollcommand=self.scroll_y.set)
+                        self.scroll_x.config(command=self.canvas.xview)
+                        self.scroll_y.config(command=self.canvas.yview)
+                        self.scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
+                        self.scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
+                        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-                        # Initialize shape variables
+                        # Initialize variables
                         self.current_shape = None
                         self.start_x = None
                         self.start_y = None
                         self.current_shape_item = None
-                        
                         self.pen_active = False
                         self.eraser_active = False
+                        self.color = "black"
+                        self.undo_stack = []
+                        self.redo_stack = []
+                        self.zoom_level = 1.0
+                        self.max_undo = 50  # Limit to prevent excessive memory use
 
                         # Create buttons
                         self.color_button = tk.Button(root, text="Color", command=self.choose_color)
-                        self.pen_button = Button(root, text='Pen', command=self.use_pen)
+                        self.pen_button = tk.Button(root, text='Pen', command=self.use_pen)
                         self.eraser_button = tk.Button(root, text="Eraser", command=self.use_eraser)
                         self.rect_button = tk.Button(root, text="Rectangle", command=self.create_rectangle)
                         self.circle_button = tk.Button(root, text="Arrow", command=self.create_arrow)
                         self.clear_button = tk.Button(root, text="Clear", command=self.clear_canvas)
-                        self.text_frame = Frame(root, height=100, width=200, relief=SUNKEN, borderwidth=3)
-                        self.text_entry = Entry(self.text_frame, textvariable=textValue, bg="white" , width=20)
+                        self.undo_button = tk.Button(root, text="Undo", command=self.undo)
+                        self.redo_button = tk.Button(root, text="Redo", command=self.redo)
+                        self.zoom_in_button = tk.Button(root, text="Zoom In", command=self.zoom_in)
+                        self.zoom_out_button = tk.Button(root, text="Zoom Out", command=self.zoom_out)
+                        self.save_button = tk.Button(root, text="Save", command=self.save_canvas)
+                        self.text_frame = tk.Frame(root, height=100, width=200, relief=tk.SUNKEN, borderwidth=3)
+                        self.text_entry = tk.Entry(self.text_frame, textvariable=textValue, bg="white", width=20)
                         self.text_note = tk.Label(root, text="* Right click on canvas to paste text", font=italic_font, fg="gray")
+                        
+                        # Pack buttons
                         self.pen_button.pack(side=tk.LEFT)
                         self.eraser_button.pack(side=tk.LEFT)
                         self.clear_button.pack(side=tk.LEFT)
                         self.color_button.pack(side=tk.LEFT)
                         self.rect_button.pack(side=tk.LEFT)
                         self.circle_button.pack(side=tk.LEFT)
+                        self.undo_button.pack(side=tk.LEFT)
+                        self.redo_button.pack(side=tk.LEFT)
+                        self.zoom_in_button.pack(side=tk.LEFT)
+                        self.zoom_out_button.pack(side=tk.LEFT)
+                        self.save_button.pack(side=tk.LEFT)
                         self.text_frame.pack(side=tk.LEFT)                         
                         self.text_entry.pack(side=tk.LEFT)
                         self.text_note.pack(side=tk.LEFT)
-                        
 
                         # Bind mouse events
                         self.canvas.bind("<Button-1>", self.start_draw)
@@ -1259,10 +1297,17 @@ def createNewProject():
                         self.canvas.bind("<ButtonRelease-1>", self.stop_draw)
                         self.canvas.bind("<Button-2>", self.add_text)
                         self.canvas.bind("<Button-3>", self.add_text)
+                        self.canvas.bind("<MouseWheel>", self.zoom)
+
+                        # Initial scroll region
+                        self.canvas.config(scrollregion=(0, 0, 1000, 1000))  # Large initial region
 
                     def add_text(self, event):
-                        self.canvas.create_text(event.x, event.y, text=textValue.get())
-                    
+                        item = self.canvas.create_text(event.x, event.y, text=textValue.get() or "", fill=self.color)
+                        self.save_state()
+                        self.redo_stack.clear()
+                        print(f"Added text, undo_stack size: {len(self.undo_stack)}")
+
                     def use_pen(self):
                         self.pen_active = True
                         self.eraser_active = False
@@ -1274,8 +1319,9 @@ def createNewProject():
                         self.current_shape = None
 
                     def choose_color(self):
-                        global color 
-                        color = colorchooser.askcolor(title="Choose color")
+                        color_tuple = colorchooser.askcolor(title="Choose color")
+                        if color_tuple[1]:
+                            self.color = color_tuple[1]
 
                     def create_rectangle(self):
                         self.pen_active = False
@@ -1290,38 +1336,135 @@ def createNewProject():
                     def start_draw(self, event):
                         self.start_x = event.x
                         self.start_y = event.y
-                        if self.pen_active:
-                            # Just store the starting point; nothing to draw yet
+                        if self.pen_active or self.eraser_active:
                             return
                         if self.current_shape == "rectangle":
                             self.current_shape_item = self.canvas.create_rectangle(
-                                self.start_x, self.start_y, self.start_x, self.start_y, outline=color[1]
+                                self.start_x, self.start_y, self.start_x, self.start_y, outline=self.color
                             )
                         elif self.current_shape == "arrow":
                             self.current_shape_item = self.canvas.create_line(
-                                self.start_x, self.start_y, self.start_x, self.start_y, fill=color[1], arrow="last", width=5
+                                self.start_x, self.start_y, self.start_x, self.start_y, fill=self.color, arrow="last", width=5
                             )
 
                     def draw_shape(self, event):
-                        if self.pen_active:
-                            self.canvas.create_line(self.start_x, self.start_y, event.x, event.y, fill=color[1])
-                            self.start_x, self.start_y = event.x, event.y
-                        elif self.eraser_active:
-                            self.canvas.create_line(self.start_x, self.start_y, event.x, event.y, fill="white", width=10)
+                        if self.pen_active or self.eraser_active:
+                            item = self.canvas.create_line(self.start_x, self.start_y, event.x, event.y, 
+                                                        fill=self.color if self.pen_active else "white", 
+                                                        width=2 if self.pen_active else 10)
+                            self.save_state_for_stroke(item)  # Save state for each stroke
+                            self.redo_stack.clear()
                             self.start_x, self.start_y = event.x, event.y
                         elif self.current_shape_item:
                             x, y = event.x, event.y
                             self.canvas.coords(self.current_shape_item, self.start_x, self.start_y, x, y)
 
                     def stop_draw(self, event):
+                        if self.current_shape_item or self.pen_active or self.eraser_active:
+                            self.save_state()  # Save final state for non-pen/eraser actions
+                            self.redo_stack.clear()
+                            print(f"Stopped draw, undo_stack size: {len(self.undo_stack)}")
                         self.current_shape_item = None
+                        self.pen_active = False
+                        self.eraser_active = False
 
                     def clear_canvas(self):
+                        self.save_state()
                         self.canvas.delete("all")
+                        self.redo_stack.clear()
+                        self.update_scroll_region()
+                        print(f"Cleared canvas, undo_stack size: {len(self.undo_stack)}")
+
+                    def save_state(self):
+                        items = []
+                        for item in self.canvas.find_all():
+                            item_type = self.canvas.type(item)
+                            coords = self.canvas.coords(item)
+                            config = {k: v[-1] for k, v in self.canvas.itemconfig(item).items() if k in ["fill", "outline", "text", "width", "arrow"]}
+                            if item_type == "line":
+                                items.append(("line", coords, {"fill": config.get("fill", "black"), "width": config.get("width", 2), "arrow": config.get("arrow", "none")}))
+                            elif item_type == "rectangle":
+                                items.append(("rectangle", coords, {"outline": config.get("outline", "black")}))
+                            elif item_type == "text":
+                                items.append(("text", coords, {"text": config.get("text", ""), "fill": config.get("fill", "black")}))
+                        if items:
+                            if len(self.undo_stack) >= self.max_undo:
+                                self.undo_stack.pop(0)  # Remove oldest state if limit reached
+                            self.undo_stack.append(items)
+                        self.update_scroll_region()
+
+                    def save_state_for_stroke(self, item):
+                        item_type = self.canvas.type(item)
+                        coords = self.canvas.coords(item)
+                        config = {k: v[-1] for k, v in self.canvas.itemconfig(item).items() if k in ["fill", "width"]}
+                        if item_type == "line" and len(self.undo_stack) < self.max_undo:
+                            self.undo_stack.append([("line", coords, {"fill": config.get("fill", "black"), "width": config.get("width", 2)})])
+                        self.update_scroll_region()
+
+                    def undo(self):
+                        if self.undo_stack:
+                            state = self.undo_stack.pop()
+                            self.redo_stack.append([(self.canvas.type(item), self.canvas.coords(item), {k: v[-1] for k, v in self.canvas.itemconfig(item).items() if k in ["fill", "outline", "text", "width", "arrow"]}) for item in self.canvas.find_all()])
+                            self.canvas.delete("all")
+                            for item_type, coords, config in state:
+                                if item_type == "line":
+                                    self.canvas.create_line(*coords, fill=config["fill"], width=config.get("width", 2), arrow=config.get("arrow", "none"))
+                                elif item_type == "rectangle":
+                                    self.canvas.create_rectangle(*coords, outline=config["outline"])
+                                elif item_type == "text":
+                                    self.canvas.create_text(coords[0], coords[1], text=config["text"], fill=config["fill"])
+                            self.update_scroll_region()
+                            print(f"Undo performed, undo_stack size: {len(self.undo_stack)}, redo_stack size: {len(self.redo_stack)}")
+
+                    def redo(self):
+                        if self.redo_stack:
+                            state = self.redo_stack.pop()
+                            self.undo_stack.append([(self.canvas.type(item), self.canvas.coords(item), {k: v[-1] for k, v in self.canvas.itemconfig(item).items() if k in ["fill", "outline", "text", "width", "arrow"]}) for item in self.canvas.find_all()])
+                            self.canvas.delete("all")
+                            for item_type, coords, config in state:
+                                if item_type == "line":
+                                    self.canvas.create_line(*coords, fill=config["fill"], width=config.get("width", 2), arrow=config.get("arrow", "none"))
+                                elif item_type == "rectangle":
+                                    self.canvas.create_rectangle(*coords, outline=config["outline"])
+                                elif item_type == "text":
+                                    self.canvas.create_text(coords[0], coords[1], text=config["text"], fill=config["fill"])
+                            self.update_scroll_region()
+                            print(f"Redo performed, undo_stack size: {len(self.undo_stack)}, redo_stack size: {len(self.redo_stack)}")
+
+                    def zoom_in(self):
+                        self.zoom_level *= 1.2
+                        self.canvas.scale("all", self.canvas.canvasx(0), self.canvas.canvasy(0), 1.2, 1.2)
+                        self.update_scroll_region()
+
+                    def zoom_out(self):
+                        self.zoom_level /= 1.2
+                        if self.zoom_level > 0.1:
+                            self.canvas.scale("all", self.canvas.canvasx(0), self.canvas.canvasy(0), 1/1.2, 1/1.2)
+                            self.update_scroll_region()
+
+                    def zoom(self, event):
+                        if event.delta > 0:
+                            self.zoom_in()
+                        else:
+                            self.zoom_out()
+
+                    def save_canvas(self):
+                        self.canvas.postscript(file="temp.ps", colormode="color")
+                        from PIL import Image
+                        img = Image.open("temp.ps")
+                        img.save("image.png", "PNG")
+                        os.remove("temp.ps")
+                        messagebox.showinfo("Success", "Canvas saved as image.png")
+
+                    def update_scroll_region(self):
+                        region = self.canvas.bbox("all")
+                        if region:
+                            self.canvas.config(scrollregion=region)
+                        else:
+                            self.canvas.config(scrollregion=(0, 0, 1000, 1000))
 
                 app = ShapeEditorApp(analysis)
-        
-        
+
         def back_3():
             global pageNumber
             pageNumber -= 1
@@ -1351,6 +1494,10 @@ def createNewProject():
 
     def page_5(): 
         global p5rootcause, p5existingpolicies, p5relevantprov, p5accomplishments, p5assessments  
+
+        # Progress indicator
+        progress_label = tk.Label(mainProject, text="Page 5 of 15: Enter Root Cause and Assess Existing Policies", font=("Arial", 12, "bold"))
+        progress_label.place(x=10, y=50)
 
         mainProject.state('zoomed')
         style.configure('Treeview', rowheight=320)
@@ -1565,9 +1712,11 @@ def createNewProject():
         btnNext4.place(x=790, y=750)
         status.place(x=10, y=700)
 
-
-
     def page_6():                                               # write problematic situation and undesirable effects
+        # Progress indicator
+        progress_label = tk.Label(mainProject, text="Page 6 of 15: Define Policy Problem and Issue Statement", font=("Arial", 12, "bold"))
+        progress_label.place(x=10, y=50)
+
         global p6policyproblem, p6policyissue
 
         mainProject.state('normal')
@@ -1636,8 +1785,11 @@ def createNewProject():
 
         #setup_page_common(6, "Policy Problem and Issue", frame6, widgets_to_destroy, back_5, next_5)
 
-
     def page_7():
+        # Progress indicator
+        progress_label = tk.Label(mainProject, text="Page 7 of 15: List Policy Goals, Objectives, and Indicators", font=("Arial", 12, "bold"))
+        progress_label.place(x=10, y=50)
+
         global p7policyGoalsandObjectives, p7indicators
 
         mainProject.geometry("880x600")
@@ -1803,8 +1955,11 @@ def createNewProject():
         btnBack6.place(relx=0.35, rely=0.95, anchor="center")
         btnNext6.place(relx=0.65, rely=0.95, anchor="center")
 
-
     def page_8():
+        # Progress indicator
+        progress_label = tk.Label(mainProject, text="Page 8 of 15: Identify Stakeholders and Actors", font=("Arial", 12, "bold"))
+        progress_label.place(x=10, y=50)
+
         global p8stakeholders, p8actors
         mainProject.state('normal') 
         mainProject.geometry("800x800")
@@ -1963,8 +2118,11 @@ def createNewProject():
         stakeholders.bind("<Tab>", lambda e: actors.focus_set())
         actors.bind("<Tab>", lambda e: add_button.focus_set())
 
+    def page_9():   
+        # Progress indicator
+        progress_label = tk.Label(mainProject, text="Page 9 of 15: Assess Policy Alternatives", font=("Arial", 12, "bold"))
+        progress_label.place(x=10, y=50)
 
-    def page_9():           
         global p9alternatives, p9altnum
         mainProject.state('normal') 
         mainProject.geometry("870x545")
@@ -3020,6 +3178,10 @@ def createNewProject():
         btnBack8.place(x=265, y=440)      
 
     def page_10():
+        # Progress indicator
+        progress_label = tk.Label(mainProject, text="Page 10 of 15: Evaluate Spillovers, Externalities, Constraints", font=("Arial", 12, "bold"))
+        progress_label.place(x=10, y=50)
+
         global p10spillovers, p10externalities, p10constraints, p10mitimeasures
         mainProject.state('zoomed') 
         frame10 = tk.LabelFrame(mainProject)
@@ -3213,8 +3375,11 @@ def createNewProject():
         btnBack9.place(relx=0.4, rely=0.90, anchor="s")
         btnNext9.place(relx=0.6, rely=0.90, anchor="s")
 
-
     def page_11():
+        # Progress indicator
+        progress_label = tk.Label(mainProject, text="Page 11 of 15: Describe Best Policy Alternative", font=("Arial", 12, "bold"))
+        progress_label.place(x=10, y=50)
+
         global p11BPAdescription, p11BPAreasonSelect
         mainProject.state('normal') 
         mainProject.geometry("880x400")
@@ -3274,8 +3439,11 @@ def createNewProject():
         btnBack10.place(relx=0.35, rely=0.95, anchor="s")
         btnNext10.place(relx=0.65, rely=0.95, anchor="s")
 
-
     def page_12():
+        # Progress indicator
+        progress_label = tk.Label(mainProject, text="Page 12 of 15: Detail Spillovers and Mitigation", font=("Arial", 12, "bold"))
+        progress_label.place(x=10, y=50)
+
         global p12BPAspillover, p12BPAexternality, p12BPAconstraint, p12BPAmitigatingmeasure
 
         mainProject.geometry("880x500")
@@ -3364,6 +3532,10 @@ def createNewProject():
         btnNext11.place(relx=0.6, rely=0.96, anchor="s")
 
     def page_13():
+        # Progress indicator
+        progress_label = tk.Label(mainProject, text="Page 13 of 15: Specify Legislation, Implementers, Funding", font=("Arial", 12, "bold"))
+        progress_label.place(x=10, y=50)
+
         global p13BPAwhat, p13BPAwho, p13BPAhow
 
         mainProject.geometry("880x500")
@@ -3447,6 +3619,10 @@ def createNewProject():
         ##    pass
 
     def page_14():
+        # Progress indicator
+        progress_label = tk.Label(mainProject, text="Page 14 of 15: Create Policy Implementation Plan", font=("Arial", 12, "bold"))
+        progress_label.place(x=10, y=50)
+
         global p14criticalActions, p14responsible, p14timeline, p14budget, p14budgetsource
         frame14 = tk.LabelFrame(mainProject)
         mainProject.state('zoomed')
@@ -3645,6 +3821,10 @@ def createNewProject():
         ##    pass
 
     def page_15():
+        # Progress indicator
+        progress_label = tk.Label(mainProject, text="Page 15 of 15: Develop Monitoring and Evaluation Plan", font=("Arial", 12, "bold"))
+        progress_label.place(x=10, y=50)
+
         global p7policyGoalsandObjectives, p7indicators
         global p15dataSources, p15frequency, p15responsible, p15output, p15report
 

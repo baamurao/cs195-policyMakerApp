@@ -1,0 +1,98 @@
+{
+    "save_pdf_file_path": "C:/Users/Hamdi/Documents/School/CS_195/cs195-policyMakerApp/Project2.pdf",
+    "save_json_file_path": "C:/Users/Hamdi/Documents/School/CS_195/cs195-policyMakerApp/Project1.json",
+    "p1projecttitle": " Project1",
+    "p1analysts": " Analyst1",
+    "p1fontstyle": "@MS Gothic",
+    "p1policyanalysis": " Analysis1",
+    "p1fontsize": 12,
+    "p2problematicsituation": "Problem1\n\n\n\n\n\n\n\n\n\n\n\n",
+    "p2undesirableeffects": "Effect1\n\n\n\n\n\n\n\n\n\n\n\n",
+    "p3efforts": [
+        "Effort1"
+    ],
+    "p3accomplishments": [
+        "Accomplishment1"
+    ],
+    "p3assessments": [
+        "Assessment1"
+    ],
+    "p5rootcause": " Money",
+    "p5existingpolicies": [
+        "1\n"
+    ],
+    "p5relevantprov": [
+        "2\n"
+    ],
+    "p5accomplishments": [
+        "3\n"
+    ],
+    "p5assessments": [
+        "4\n"
+    ],
+    "p6policyproblem": " Problem\n\n\n",
+    "p6policyissue": "Statement\n\n\n",
+    "p7policyGoalsandObjectives": [
+        "Win",
+        "Win"
+    ],
+    "p7indicators": [
+        "Indicator",
+        "SMART"
+    ],
+    "p8stakeholders": [
+        "Stakeholder"
+    ],
+    "p8actors": [
+        "Robin Padilla"
+    ],
+    "p9altnum": [
+        "AlternativeNo"
+    ],
+    "p9alternatives": [
+        "Alternative"
+    ],
+    "p10spillovers": "Spillover",
+    "p10externalities": "Externalities",
+    "p10constraints": "Constraints",
+    "p10mitimeasures": "Mitigation",
+    "p11BPAdescription": "Description",
+    "p11BPAreasonSelect": "Reasons",
+    "p12BPAspillover": "Test",
+    "p12BPAexternality": "1",
+    "p12BPAconstraint": "1",
+    "p12BPAmitigatingmeasure": "1",
+    "p13BPAwhat": "1",
+    "p13BPAwho": "1",
+    "p13BPAhow": "1",
+    "p14criticalActions": [
+        1
+    ],
+    "p14responsible": [
+        1
+    ],
+    "p14timeline": [
+        1
+    ],
+    "p14budget": [
+        1
+    ],
+    "p14budgetsource": [
+        1
+    ],
+    "p15dataSources": [
+        "Source"
+    ],
+    "p15frequency": [
+        "Data"
+    ],
+    "p15responsible": [
+        "UIC"
+    ],
+    "p15output": [
+        "M&E"
+    ],
+    "p15report": [
+        "1"
+    ]
+}
