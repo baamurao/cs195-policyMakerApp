@@ -209,10 +209,9 @@ p15report = []
 # Nasa baba yung menu set-up - Bmae
 
 def new_project():
-    global pageNumber
-    pageNumber = 1
-    for widget in mainProject.winfo_children():
-        widget.destroy()
+    global save_pdf_file_path, save_json_file_path
+    save_pdf_file_path = None
+    save_json_file_path = None
 
     global p1projecttitle, p1analysts, p1fontstyle, p1policyanalysis, p1fontsize
 
@@ -290,8 +289,7 @@ def new_project():
     p15responsible = []
     p15output = []
     p15report = []
-
-    page_1()  # Assumed defined elsewhere
+    createNewProject()
 
 def open_project():
     global save_pdf_file_path, save_json_file_path
@@ -679,7 +677,6 @@ def createNewProject():
         btnCreate.place(x=380, y=170)
         btnClear1.place(x=190, y=170)
         status.place(x=10, y=170)
-
     page_1()
 
     def page_2():                                                               # write problematic situation and undesirable effects
@@ -1195,6 +1192,7 @@ def createNewProject():
                 plt.plot(X_test, y_test, label="Logistic Regression Model", color="red", linewidth=3)
                 plt.savefig('regplot.png')
                 plt.show() 
+                page_5
             
             elif(int(var.get()) == 4):
                 analysis = Toplevel(main)
@@ -1640,7 +1638,7 @@ def createNewProject():
     def page_7():
         global p7policyGoalsandObjectives, p7indicators
 
-        mainProject.geometry("880x600")
+        mainProject.geometry("900x600")
         style.configure('Treeview', rowheight=40)
 
         # Main container
@@ -1686,9 +1684,9 @@ def createNewProject():
         pgo.place(relx=0.05, rely=0.6)
         indi_label.place(relx=0.55, rely=0.55)
         indi.place(relx=0.45, rely=0.6)
-        add_button.place(relx=0.35, rely=0.8)
-        edit_button.place(relx=0.5, rely=0.8)
-        delete_button.place(relx=0.65, rely=0.8)
+        add_button.place(relx=0.35, rely=0.8, anchor="center")
+        edit_button.place(relx=0.5, rely=0.8, anchor="center")
+        delete_button.place(relx=0.65, rely=0.8, anchor="center")
 
         # Populate table
         if len(p7policyGoalsandObjectives) == len(p7indicators):
@@ -2088,7 +2086,7 @@ def createNewProject():
 
         assessAlterTable.grid(row=1, rowspan=7, column=0, columnspan=2)
 
-        polAltNoLabel.place(x=139, y=300)
+        polAltNoLabel.place(x=1, y=300)
         policyAlternativeNo.place(x=135, y=330)
         polAltLabel.place(x=520, y=300)
         policyAlternatives.place(x=420, y=330)
@@ -3071,19 +3069,24 @@ def createNewProject():
         ToolTip(editButton10, "Edit the selected table entry")
         ToolTip(deleteButton10, "Delete the selected table entry")
 
-        alternaLabel.place(relx=0.05, rely=0.68)
-        alternative.place(relx=0.05, rely=0.73)
-        spillovLabel.place(relx=0.25, rely=0.68)
-        spillover.place(relx=0.25, rely=0.73)
-        externaLabel.place(relx=0.45, rely=0.68)
-        externality.place(relx=0.45, rely=0.73)
-        constraLabel.place(relx=0.65, rely=0.68)
-        constraint.place(relx=0.65, rely=0.73)
-        mitmeasLabel.place(relx=0.85, rely=0.68)
-        mitimeasure.place(relx=0.85, rely=0.73)
-        addButton10.place(relx=0.4, rely=0.80)
-        editButton10.place(relx=0.5, rely=0.80)
-        deleteButton10.place(relx=0.6, rely=0.80)
+        alternaLabel.place(relx=0.38, rely=0.60)
+        alternative.place(relx=0.45, rely=0.60)
+
+        spillovLabel.place(relx=0.05, rely=0.65)
+        spillover.place(relx=0.05, rely=0.70)
+
+        externaLabel.place(relx=0.30, rely=0.65)
+        externality.place(relx=0.30, rely=0.70)
+
+        constraLabel.place(relx=0.55, rely=0.65)
+        constraint.place(relx=0.55, rely=0.70)
+
+        mitmeasLabel.place(relx=0.80, rely=0.65)
+        mitimeasure.place(relx=0.80, rely=0.70)
+
+        addButton10.place(relx=0.40, rely=0.82, anchor='s')
+        editButton10.place(relx=0.50, rely=0.82, anchor='s')
+        deleteButton10.place(relx=0.60, rely=0.82, anchor='s')
 
         for i, alt in enumerate(p9alternatives):
             assessPATable.insert("", 'end', values=(f"Alt {i+1}: {alt}", p10spillovers, p10externalities, p10constraints, p10mitimeasures))
@@ -3217,7 +3220,7 @@ def createNewProject():
     def page_11():
         global p11BPAdescription, p11BPAreasonSelect
         mainProject.state('normal') 
-        mainProject.geometry("880x400")
+        mainProject.geometry("750x380")
         frame11 = tk.LabelFrame(mainProject, text="Best/Optimal Policy Alternative", font=("Arial", 12, "bold"))
         frame11.place(relx=0.01, rely=0.01, relwidth=0.97, relheight=0.75)
 
@@ -3278,34 +3281,40 @@ def createNewProject():
     def page_12():
         global p12BPAspillover, p12BPAexternality, p12BPAconstraint, p12BPAmitigatingmeasure
 
-        mainProject.geometry("880x500")
-        frame12 = tk.LabelFrame(mainProject)
-        frame12.place(relx=0.01, rely=0.02, relwidth=0.96, relheight=0.7)
+        mainProject.geometry("750x420")  # Increased height to make all content visible
+
+        frame12 = tk.LabelFrame(mainProject, text="Details of the Best/Optimal Policy Alternative", font=("Arial", 11))
+        frame12.place(relx=0.01, rely=0.02, relwidth=0.96, relheight=0.75)  # Increased height
 
         status = ttk.Label(mainProject, text="")
         status.place(relx=0.01, rely=0.92)
 
         # Labels and inputs
-        p12Label = tk.Label(mainProject, text="Details of the Best/Optimal Policy Alternative", font=("Arial", 12, "bold"))
         spilloverLabel = tk.Label(frame12, text="Spillover")
-        spillover = scrolledtext.ScrolledText(frame12, height=8, width=30)
-        externalityLabel = tk.Label(frame12, text="Externalities")
-        externality = scrolledtext.ScrolledText(frame12, height=8, width=30)
-        constraintLabel = tk.Label(frame12, text="Constraints")
-        constraint = scrolledtext.ScrolledText(frame12, height=8, width=30)
-        mitiMeasureLabel = tk.Label(frame12, text="Mitigating Measures")
-        mitiMeasure = scrolledtext.ScrolledText(frame12, height=8, width=30)
+        spillover = scrolledtext.ScrolledText(frame12, height=7, width=40)
 
-        # Layout
-        p12Label.place(relx=0.02, rely=0.01)
-        spilloverLabel.grid(row=0, column=0, sticky="w", padx=7)
-        spillover.grid(row=1, column=0, sticky="w", padx=7)
-        externalityLabel.grid(row=0, column=1, sticky="w", padx=7)
-        externality.grid(row=1, column=1, sticky="w", padx=7)
-        constraintLabel.grid(row=2, column=0, sticky="w", padx=7)
-        constraint.grid(row=3, column=0, sticky="w", padx=7)
-        mitiMeasureLabel.grid(row=2, column=1, sticky="w", padx=7)
-        mitiMeasure.grid(row=3, column=1, sticky="w", padx=7)
+        externalityLabel = tk.Label(frame12, text="Externalities")
+        externality = scrolledtext.ScrolledText(frame12, height=7, width=40)
+
+        constraintLabel = tk.Label(frame12, text="Constraints")
+        constraint = scrolledtext.ScrolledText(frame12, height=7, width=40)
+
+        mitiMeasureLabel = tk.Label(frame12, text="Mitigating Measures")
+        mitiMeasure = scrolledtext.ScrolledText(frame12, height=7, width=40)
+
+        # Layout inside frame12
+        spilloverLabel.grid(row=0, column=0, sticky="w", padx=10, pady=(10, 2))
+        spillover.grid(row=1, column=0, padx=10)
+
+        externalityLabel.grid(row=0, column=1, sticky="w", padx=10, pady=(10, 2))
+        externality.grid(row=1, column=1, padx=10)
+
+        constraintLabel.grid(row=2, column=0, sticky="w", padx=10, pady=(10, 2))
+        constraint.grid(row=3, column=0, padx=10)
+
+        mitiMeasureLabel.grid(row=2, column=1, sticky="w", padx=10, pady=(10, 2))
+        mitiMeasure.grid(row=3, column=1, padx=10)
+
 
         # Pre-fill from global if available
         spillover.insert("1.0", p12BPAspillover.strip())
@@ -3366,37 +3375,43 @@ def createNewProject():
     def page_13():
         global p13BPAwhat, p13BPAwho, p13BPAhow
 
-        mainProject.geometry("880x500")
-        frame13 = tk.LabelFrame(mainProject)
-        frame13.place(relx=0.01, rely=0.02, relwidth=0.96, relheight=0.7)
+        mainProject.geometry("750x420")  # Increased height to fit all inputs
+        frame13 = tk.LabelFrame(mainProject, text="Implementation Requirements", font=("Arial", 11))
+        frame13.place(relx=0.01, rely=0.02, relwidth=0.96, relheight=0.75)
 
         status = ttk.Label(mainProject, text="")
         status.place(relx=0.01, rely=0.92)
 
-        # Labels and text areas
+        # Title
         p13Label = tk.Label(mainProject, text="Requirements for the Implementation of the Best/Optimal Policy Alternative", font=("Arial", 12, "bold"))
-        p13whatLabel = tk.Label(frame13, text="What type of legislation is needed? Why?")
-        p13what = scrolledtext.ScrolledText(frame13, height=8, width=30)
-        p13whoLabel = tk.Label(frame13, text="Who will implement? Why?")
-        p13who = scrolledtext.ScrolledText(frame13, height=8, width=30)
-        p13howLabel = tk.Label(frame13, text="How much to implement and where to source funds?")
-        p13how = scrolledtext.ScrolledText(frame13, height=8, width=30)
-
-        # Layout
         p13Label.place(relx=0.02, rely=0.01)
-        p13whatLabel.grid(row=0, column=0, sticky="w", padx=7)
-        p13what.grid(row=1, column=0, sticky="w", padx=7)
-        p13whoLabel.grid(row=0, column=1, sticky="w", padx=7)
-        p13who.grid(row=1, column=1, sticky="w", padx=7)
-        p13howLabel.grid(row=2, column=0, sticky="w", padx=7)
-        p13how.grid(row=3, column=0, sticky="w", padx=7)
 
-        # Pre-fill from existing global values
+        # Labels and ScrolledText widgets
+        p13whatLabel = tk.Label(frame13, text="What type of legislation is needed? Why?")
+        p13what = scrolledtext.ScrolledText(frame13, height=7, width=40)
+
+        p13whoLabel = tk.Label(frame13, text="Who will implement? Why?")
+        p13who = scrolledtext.ScrolledText(frame13, height=7, width=40)
+
+        p13howLabel = tk.Label(frame13, text="How much to implement and where to source funds?")
+        p13how = scrolledtext.ScrolledText(frame13, height=7, width=85)  # Spans two columns
+
+        # Layout inside frame13
+        p13whatLabel.grid(row=0, column=0, sticky="w", padx=10, pady=(10, 2))
+        p13what.grid(row=1, column=0, padx=10, pady=(0, 10))
+
+        p13whoLabel.grid(row=0, column=1, sticky="w", padx=10, pady=(10, 2))
+        p13who.grid(row=1, column=1, padx=10, pady=(0, 10))
+
+        p13howLabel.grid(row=2, column=0, columnspan=2, sticky="w", padx=10, pady=(5, 2))
+        p13how.grid(row=3, column=0, columnspan=2, padx=10)
+
+        # Pre-fill values
         p13what.insert("1.0", p13BPAwhat.strip())
         p13who.insert("1.0", p13BPAwho.strip())
         p13how.insert("1.0", p13BPAhow.strip())
 
-        # Navigation
+        # Navigation Buttons
         def back_12():
             global pageNumber
             pageNumber -= 1
@@ -3408,12 +3423,10 @@ def createNewProject():
         def next_12():
             global pageNumber, p13BPAwhat, p13BPAwho, p13BPAhow
 
-            # Get content from fields
             p13BPAwhat = p13what.get("1.0", tk.END).strip()
             p13BPAwho = p13who.get("1.0", tk.END).strip()
             p13BPAhow = p13how.get("1.0", tk.END).strip()
 
-            # Validation
             if not p13BPAwhat:
                 status.config(text="Enter the type of legislation needed", foreground="red")
                 return
@@ -3436,16 +3449,6 @@ def createNewProject():
         btnNext13.place(relx=0.6, rely=0.96, anchor="s")
 
 
-        #setup_page_common(13, "Implementation Requirements", frame13, widgets_to_destroy, back_12, next_12)
-        ##try:
-        ##    with open("page13_data.json", "r") as f:
-        ##        data = json.load(f)
-        ##        p13what.insert("1.0", data.get("legislation", ""))
-        ##        p13who.insert("1.0", data.get("implementers", ""))
-        ##        p13how.insert("1.0", data.get("funding", ""))
-        ##except FileNotFoundError:
-        ##    pass
-
     def page_14():
         global p14criticalActions, p14responsible, p14timeline, p14budget, p14budgetsource
         frame14 = tk.LabelFrame(mainProject)
@@ -3453,7 +3456,7 @@ def createNewProject():
         widgets_to_destroy = [frame14]
         undo_stack = []
 
-        frame14.place(x=10, y=10, relwidth=0.98, relheight=0.65)
+        frame14.place(x=10, y=10, relwidth=0.98, relheight=0.60)
 
         implementationPlanLabel = tk.Label(frame14, text="Policy Implementation Plan", font=("Arial", 12, "bold"))
         implementationPlanTable = ttk.Treeview(frame14, selectmode="browse", height=8)
@@ -3475,37 +3478,50 @@ def createNewProject():
 
         # UI
         critALabel = tk.Label(mainProject, text="Critical Action")
-        raUnitLabel = tk.Label(mainProject, text="Responsible/\nAccountable Unit")
+        raUnitLabel = tk.Label(mainProject, text="Responsible/\nAccountable Unit", justify="left")
         timeframeLabel = tk.Label(mainProject, text="Timeframe")
         budgetLabel = tk.Label(mainProject, text="Budget")
         budgSoLabel = tk.Label(mainProject, text="Budget Source")
         criticalAction = scrolledtext.ScrolledText(mainProject, height=4, width=30)
-        respaccoUnit = scrolledtext.ScrolledText(mainProject, height=4, width=25)
-        timeframe = scrolledtext.ScrolledText(mainProject, height=4, width=18)
-        budget = scrolledtext.ScrolledText(mainProject, height=4, width=14)
-        budgetSource = scrolledtext.ScrolledText(mainProject, height=4, width=17)
+        respaccoUnit = scrolledtext.ScrolledText(mainProject, height=4, width=30)
+        timeframe = scrolledtext.ScrolledText(mainProject, height=4, width=30)
+        budget = scrolledtext.ScrolledText(mainProject, height=4, width=30)
+        budgetSource = scrolledtext.ScrolledText(mainProject, height=4, width=30)
         addButton14 = ttk.Button(mainProject, text="Add", command=lambda: add_data14())
         editButton14 = ttk.Button(mainProject, text="Edit", state="disabled", command=lambda: edit_data14())
         deleteButton14 = ttk.Button(mainProject, text="Delete", state="disabled", command=lambda: delete_data14())
 
-        # Placement
-        implementationPlanLabel.grid(row=0, column=0, columnspan=2, pady=10)
-        implementationPlanTable.grid(row=1, column=0)
-        sb_y.grid(row=1, column=1, sticky="ns")
-        sb_x.grid(row=2, column=0, sticky="ew")
-        critALabel.place(relx=0.05, rely=0.70)
-        criticalAction.place(relx=0.05, rely=0.75)
-        raUnitLabel.place(relx=0.25, rely=0.70)
-        respaccoUnit.place(relx=0.25, rely=0.75)
-        timeframeLabel.place(relx=0.45, rely=0.70)
-        timeframe.place(relx=0.45, rely=0.75)
-        budgetLabel.place(relx=0.65, rely=0.70)
-        budget.place(relx=0.65, rely=0.75)
-        budgSoLabel.place(relx=0.85, rely=0.70)
-        budgetSource.place(relx=0.85, rely=0.75)
-        addButton14.place(relx=0.4, rely=0.93)
-        editButton14.place(relx=0.5, rely=0.93)
-        deleteButton14.place(relx=0.6, rely=0.93)
+        # Place Treeview to fully occupy frame14 (except for the title)
+        implementationPlanLabel.place(relx=0.01, rely=0.01)
+        
+        # Full-width and height minus a bit of margin for padding
+        implementationPlanTable.place(relx=0.01, rely=0.10, relwidth=0.96, relheight=0.80)
+        
+        # Scrollbars aligned to right and bottom of the Treeview
+        sb_y.place(relx=0.97, rely=0.10, relheight=0.80)
+        sb_x.place(relx=0.01, rely=0.90, relwidth=0.96)
+
+        
+        # Define common positions for 5 columns (evenly spaced)
+        positions = [0.02, 0.22, 0.42, 0.62, 0.82]
+
+        # Labels
+        critALabel.place(relx=positions[0], rely=0.65)
+        raUnitLabel.place(relx=positions[1], rely=0.65)
+        timeframeLabel.place(relx=positions[2], rely=0.65)
+        budgetLabel.place(relx=positions[3], rely=0.65)
+        budgSoLabel.place(relx=positions[4], rely=0.65)
+
+        # Inputs (under each label)
+        criticalAction.place(relx=positions[0], rely=0.70)
+        respaccoUnit.place(relx=positions[1], rely=0.70)
+        timeframe.place(relx=positions[2], rely=0.70)
+        budget.place(relx=positions[3], rely=0.70)
+        budgetSource.place(relx=positions[4], rely=0.70)
+
+        addButton14.place(relx=0.4, rely=0.85, anchor="s")
+        editButton14.place(relx=0.5, rely=0.85, anchor="s")
+        deleteButton14.place(relx=0.6, rely=0.85, anchor="s")
 
         # Load data if available
         if len(p14criticalActions) == len(p14responsible) == len(p14timeline) == len(p14budget) == len(p14budgetsource):
@@ -3631,8 +3647,8 @@ def createNewProject():
 
         btnBack14 = Button(mainProject, text="Back", width=10, command=back_13)
         btnNext14 = Button(mainProject, text="Next", width=10, command=next_13)
-        btnBack14.place(relx=0.4, rely=0.98, anchor="s")
-        btnNext14.place(relx=0.6, rely=0.98, anchor="s")
+        btnBack14.place(relx=0.4, rely=0.90, anchor="s")
+        btnNext14.place(relx=0.6, rely=0.90, anchor="s")
 
 
         #setup_page_common(14, "Policy Implementation Plan", frame14, widgets_to_destroy, back_13, next_13)
@@ -3675,7 +3691,7 @@ def createNewProject():
             "Unit-In-Charge", "M&E Outputs", "M&E Report Users"
         ]
         fields = []
-        positions = [0.02, 0.17, 0.32, 0.47, 0.62, 0.77, 0.92]
+        positions = [0.02, 0.1633, 0.3067, 0.45, 0.5933, 0.7367, 0.88]
         for i, label in enumerate(labels):
             tk.Label(mainProject, text=label).place(relx=positions[i], rely=0.63)
             entry = scrolledtext.ScrolledText(mainProject, height=4, width=20)
@@ -3747,14 +3763,18 @@ def createNewProject():
         add_btn = ttk.Button(mainProject, text="Add", command=add_data15)
         edit_btn = ttk.Button(mainProject, text="Edit", command=edit_data15)
         delete_btn = ttk.Button(mainProject, text="Delete", command=delete_data15)
-        add_btn.place(relx=0.4, rely=0.92)
-        edit_btn.place(relx=0.5, rely=0.92)
-        delete_btn.place(relx=0.6, rely=0.92)
+        add_btn.place(relx=0.4, rely=0.85, anchor="s")
+        edit_btn.place(relx=0.5, rely=0.85, anchor="s")
+        delete_btn.place(relx=0.6, rely=0.85, anchor="s")
 
-        policyAssessmentLabel.grid(row=0, column=0, columnspan=2, pady=5)
-        policyAssessmentTable.grid(row=1, column=0)
-        sb_y.grid(row=1, column=1, sticky="ns")
-        sb_x.grid(row=2, column=0, sticky="ew")
+        policyAssessmentLabel.place(relx=0.01, rely=0.01)
+
+        # Table maximized inside the frame
+        policyAssessmentTable.place(relx=0.01, rely=0.10, relwidth=0.96, relheight=0.80)
+
+        # Scrollbars aligned to the table's right and bottom
+        sb_y.place(relx=0.97, rely=0.10, relheight=0.80)
+        sb_x.place(relx=0.01, rely=0.90, relwidth=0.96)
 
         for values in zip(p7policyGoalsandObjectives, p7indicators, p15dataSources, p15frequency, p15responsible, p15output, p15report):
             policyAssessmentTable.insert("", "end", values=values)
@@ -3776,12 +3796,13 @@ def createNewProject():
                 w.destroy()
             save()
             messagebox.showinfo("Done", "You have completed the policy planning process.")
+            mainProject.destroy()
             new_project()
 
         btnBack14 = ttk.Button(mainProject, text="Back", command=back_14)
         btnNext14 = ttk.Button(mainProject, text="Finish", command=next_14)
-        btnBack14.place(relx=0.4, rely=0.98, anchor="s")
-        btnNext14.place(relx=0.6, rely=0.98, anchor="s")
+        btnBack14.place(relx=0.4, rely=0.90, anchor="s")
+        btnNext14.place(relx=0.6, rely=0.90, anchor="s")
 
 
     # projectTitle.config(bg="white")
@@ -3959,7 +3980,7 @@ menubar = Menu(root)
 
 file1 = Menu(menubar, tearoff = 0) 
 menubar.add_cascade(label ='File', menu = file1) 
-file1.add_command(label ='Create New', command = lambda: createNewProject())
+file1.add_command(label ='Create New', command = lambda: new_project())
 file1.add_command(label ='Open Project', command = lambda: open_project())
 file1.add_command(label ='Save', command = lambda: save()) 
 file1.add_command(label ='Print', command = lambda: print_file()) 
